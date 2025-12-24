@@ -1,3 +1,4 @@
+<!-- index.html (with Presets switcher) -->
 <!doctype html>
 <html lang="en">
 <head>
@@ -12,7 +13,7 @@
     :root{--bg:#0e0e12;--card:#15151d;--fg:#f6f2ff;--muted:#b7a7d9;--line:#222436;--accent:#d16ba5;}
     *{box-sizing:border-box} html,body{height:100%}
     body{margin:0;background:var(--bg);color:var(--fg);font:500 16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
-    .wrap{max-width:880px;margin:0 auto;padding:20px}
+    .wrap{max-width:900px;margin:0 auto;padding:20px}
     .brand{display:flex;align-items:center;gap:12px;margin:8px 0 20px}
     .brand h1{font-size:28px;margin:0}
     .pill{display:inline-block;padding:4px 10px;border-radius:999px;border:1px solid var(--line);font-size:12px;color:var(--muted)}
@@ -38,7 +39,7 @@
     .combo{font-size:22px;font-weight:800}
     .danger{color:#ff8f8f}
     hr{border:none;border-top:1px solid var(--line);margin:12px 0}
-    .kbd{font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size:12px; border:1px solid var(--line); border-radius:6px; padding:2px 6px; color:var(--muted)}
+    .kbd{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;border:1px solid var(--line);border-radius:6px;padding:2px 6px;color:var(--muted)}
   </style>
 </head>
 <body>
@@ -47,7 +48,7 @@
     <svg width="28" height="28" viewBox="0 0 60 60" fill="none" aria-hidden="true">
       <circle cx="30" cy="30" r="28" stroke="#d16ba5" stroke-width="2"/><path d="M18 40 C18 28, 42 28, 42 40 C42 48, 18 48, 18 40Z" fill="#d16ba5"/>
     </svg>
-    <h1>Slow Burn</h1><span class="pill">offline • private • config-driven</span>
+    <h1>Slow Burn</h1><span class="pill">offline • private • presets</span>
   </div>
 
   <!-- PIN Gate -->
@@ -61,9 +62,7 @@
           <button id="setpin">Set/Change PIN</button>
         </div>
       </div>
-      <div>
-        <p class="muted">Keep it slow. Consent is continuous; stop anytime. Use the timer to build anticipation.</p>
-      </div>
+      <div><p class="muted">Consent is continuous; stop anytime. Use the timer to build anticipation.</p></div>
     </div>
   </div>
 
@@ -71,33 +70,37 @@
   <div id="home" class="hidden">
     <div class="card">
       <div class="row">
-        <button id="playCards" class="btn-accent big" style="flex:1">Play: Challenge Cards</button>
-        <button id="playRng" class="big" style="flex:1">Play: RNG Roulette</button>
+        <button id="goCards" class="btn-accent big" style="flex:1">Play: Challenge Cards</button>
+        <button id="goRng" class="big" style="flex:1">Play: RNG Roulette</button>
       </div>
     </div>
 
+    <!-- Presets & Settings -->
     <div class="card">
-      <h3>Settings</h3>
+      <h3>Content Presets & Settings</h3>
       <div class="grid cols-3">
         <div>
-          <label>Ambient sounds</label>
-          <select id="music"><option value="off">Off</option><option value="on">On</option></select>
+          <label>Preset</label>
+          <select id="presetSelect"></select>
+          <div class="row" style="margin-top:8px">
+            <button id="loadPreset" class="btn-accent">Load Preset</button>
+            <button id="savePreset">Save Current</button>
+          </div>
         </div>
         <div>
           <label>Timer URL (optional)</label>
           <input id="timerUrl" placeholder="(leave blank to use built-in timer)"/>
         </div>
         <div>
-          <label>Content (Import/Export)</label>
-          <div class="row">
+          <label>Ambient sounds</label>
+          <select id="music"><option value="off">Off</option><option value="on">On</option></select>
+          <div class="row" style="margin-top:8px">
             <button id="exportJson">Export</button>
-            <label class="kbd">
-              Import<input id="importJson" type="file" accept="application/json" style="display:none">
-            </label>
+            <label class="kbd">Import<input id="importJson" type="file" accept="application/json" style="display:none"></label>
           </div>
         </div>
       </div>
-      <p class="muted">Everything is stored locally. Export a backup, edit <code>data.json</code>, or re-import updates.</p>
+      <p class="muted">Built-ins: <code>data.json</code>, <code>data-v5.json</code>, <code>data-v6.json</code> (add those files to your repo). Saved presets live on this device.</p>
     </div>
 
     <div class="card">
@@ -111,8 +114,7 @@
   <!-- Play: Cards -->
   <div id="cards" class="hidden">
     <div class="card">
-      <div class="chips" id="categoryChips"></div>
-      <hr/>
+      <div class="chips" id="categoryChips"></div><hr/>
       <div id="cardPrompt" class="big">Draw a challenge</div>
       <div id="cardTime" class="timer">00:00</div>
       <div class="row">
@@ -121,10 +123,7 @@
         <button id="timerCard" class="btn-ghost" style="flex:1">Start Timer</button>
       </div>
     </div>
-    <div class="card">
-      <h3>Endgame Options</h3>
-      <ul id="endgameList" class="muted" style="margin:0;padding-left:18px"></ul>
-    </div>
+    <div class="card"><h3>Endgame Options</h3><ul id="endgameList" class="muted" style="margin:0;padding-left:18px"></ul></div>
     <div class="card"><button class="backHome">← Back Home</button></div>
   </div>
 
@@ -164,12 +163,11 @@
     <div class="card">
       <h3>Categories</h3>
       <div id="catEditor" class="chips"></div>
-      <p class="muted">Toggle which categories are in play (endgame stays separate).</p>
+      <p class="muted">Toggle which categories are in play (endgame is shown separately).</p>
     </div>
     <div class="card">
       <h3>Cards</h3>
-      <div id="cardList"></div>
-      <hr/>
+      <div id="cardList"></div><hr/>
       <h4>Add / Edit</h4>
       <div class="grid cols-2">
         <div><label>Category</label><select id="fCategory"></select></div>
@@ -212,19 +210,10 @@
       <div class="grid cols-3">
         <div>
           <label>Mode</label>
-          <select id="rngMode">
-            <option value="times">Times</option>
-            <option value="seconds">Seconds</option>
-          </select>
+          <select id="rngMode"><option value="times">Times</option><option value="seconds">Seconds</option></select>
         </div>
-        <div>
-          <label>Min</label>
-          <input id="rngMin" type="number" min="1" value="1">
-        </div>
-        <div>
-          <label>Max</label>
-          <input id="rngMax" type="number" min="1" value="5">
-        </div>
+        <div><label>Min</label><input id="rngMin" type="number" min="1" value="1"></div>
+        <div><label>Max</label><input id="rngMax" type="number" min="1" value="5"></div>
       </div>
       <div class="row" style="margin-top:10px">
         <button id="rngSaveRange" class="btn-accent">Save Range</button>
@@ -247,8 +236,7 @@
       const hash = await crypto.subtle.digest('SHA-256', data);
       return Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,'0')).join('');
     }
-    // Fallback (Safari edge): store "plain:<pin>"
-    return 'plain:'+text;
+    return 'plain:'+text; // Safari fallback
   }
 
   // ---------- keys ----------
@@ -259,27 +247,37 @@
     SESSION:'sb_session',
     RNG_ACTIONS:'sb_rng_actions', RNG_PARTS:'sb_rng_parts',
     RNG_MODE:'sb_rng_mode', RNG_MIN:'sb_rng_min', RNG_MAX:'sb_rng_max',
-    RNG_SESSION:'sb_rng_session'
+    RNG_SESSION:'sb_rng_session',
+    PRESETS:'sb_presets' // name -> config object
   };
 
-  // ---------- seed from data.json ----------
-  async function seedFromDataJson(){
-    try{
-      const res = await fetch('./data.json', {cache:'no-store'});
-      if(!res.ok) return;
-      const cfg = await res.json();
-      const localVer = store.get(K.DATA_VER, 0);
-      if (localVer >= (cfg.version||1)) return; // already seeded newer or equal
-      store.set(K.CATS, cfg.categories);
-      store.set(K.CARDS, cfg.cards);
-      store.set(K.ENABLED, cfg.categories.filter(c=>c.enabled_default).map(c=>c.id));
-      store.set(K.RNG_ACTIONS, cfg.rng.actions);
-      store.set(K.RNG_PARTS, cfg.rng.parts);
-      store.set(K.RNG_MODE, cfg.rng.mode);
-      store.set(K.RNG_MIN, cfg.rng.min);
-      store.set(K.RNG_MAX, cfg.rng.max);
-      store.set(K.DATA_VER, cfg.version||1);
-    }catch(_){ /* offline or file missing – ignore */ }
+  // ---------- built-in preset file list ----------
+  const BUILTIN_PRESETS = [
+    {label:'(Repo) data.json', url:'./data.json'},
+    {label:'(Repo) data-v5.json', url:'./data-v5.json'},
+    {label:'(Repo) data-v6.json', url:'./data-v6.json'}
+  ];
+
+  // ---------- seeding ----------
+  async function seedFrom(url){
+    const res = await fetch(url, {cache:'no-store'});
+    if(!res.ok) throw new Error('Not found');
+    const cfg = await res.json();
+    applyConfig(cfg);
+    store.set(K.DATA_VER, cfg.version || 1);
+  }
+
+  function applyConfig(cfg){
+    if(cfg.categories) store.set(K.CATS, cfg.categories);
+    if(cfg.cards) store.set(K.CARDS, cfg.cards);
+    if(cfg.categories) store.set(K.ENABLED, cfg.categories.filter(c=>c.enabled_default).map(c=>c.id));
+    if(cfg.rng){
+      if(cfg.rng.actions) store.set(K.RNG_ACTIONS, cfg.rng.actions);
+      if(cfg.rng.parts) store.set(K.RNG_PARTS, cfg.rng.parts);
+      if(cfg.rng.mode) store.set(K.RNG_MODE, cfg.rng.mode);
+      if(Number.isFinite(cfg.rng.min)) store.set(K.RNG_MIN, cfg.rng.min);
+      if(Number.isFinite(cfg.rng.max)) store.set(K.RNG_MAX, cfg.rng.max);
+    }
   }
 
   // ---------- state ----------
@@ -298,14 +296,9 @@
     get rngMin(){ return store.get(K.RNG_MIN, 1); }, set rngMin(v){ store.set(K.RNG_MIN, v); },
     get rngMax(){ return store.get(K.RNG_MAX, 5); }, set rngMax(v){ store.set(K.RNG_MAX, v); },
     get rngSession(){ return store.get(K.RNG_SESSION, {a:null, b1:null, b2:null, quant:0}); }, set rngSession(v){ store.set(K.RNG_SESSION, v); },
+    // presets
+    get presets(){ return store.get(K.PRESETS, {}); }, set presets(v){ store.set(K.PRESETS, v); }
   };
-
-  // ---------- nav ----------
-  function show(id){
-    for (const el of ['gate','home','cards','rng','customCards','customRng'].map(x=>document.getElementById(x))) {
-      if(!el) continue; el.classList.toggle('hidden', el.id!==id);
-    }
-  }
 
   // ---------- PIN ----------
   async function unlock(){
@@ -322,11 +315,16 @@
     $('#pin').value=''; alert('PIN set.'); show('home');
   }
 
-  // ---------- Settings ----------
+  // ---------- routing ----------
+  function show(id){ for (const el of ['gate','home','cards','rng','customCards','customRng'].map(x=>document.getElementById(x))) { if(!el) continue; el.classList.toggle('hidden', el.id!==id); } }
+  $$('.backHome').forEach(b=> b.onclick = ()=> show('home'));
+
+  // ---------- settings & import/export ----------
   function bindSettings(){
     $('#timerUrl').value = state.timerUrl; $('#timerUrl').oninput = e => state.timerUrl = e.target.value.trim();
     $('#music').value = state.music; $('#music').onchange = e => state.music = e.target.value;
-    // Export
+
+    // Export current data as JSON
     $('#exportJson').onclick = ()=>{
       const blob = new Blob([JSON.stringify({
         version: (store.get(K.DATA_VER,1)),
@@ -336,23 +334,66 @@
       }, null, 2)], {type:'application/json'});
       const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'slow-burn-data.json'; a.click();
     };
-    // Import
+
+    // Import JSON (overwrites current)
     $('#importJson').onchange = async (e)=>{
       const f = e.target.files?.[0]; if(!f) return;
-      const txt = await f.text(); let cfg;
-      try{ cfg = JSON.parse(txt); }catch{ alert('Invalid JSON'); return; }
+      let cfg; try{ cfg = JSON.parse(await f.text()); }catch{ alert('Invalid JSON'); return; }
       if(!confirm('Import will replace current content. Continue?')) return;
-      if(cfg.categories) state.cats = cfg.categories;
-      if(cfg.cards) state.cards = cfg.cards;
-      if(cfg.rng){
-        if(cfg.rng.actions) state.rngActions = cfg.rng.actions;
-        if(cfg.rng.parts) state.rngParts = cfg.rng.parts;
-        if(cfg.rng.mode) state.rngMode = cfg.rng.mode;
-        if(Number.isFinite(cfg.rng.min)) state.rngMin = cfg.rng.min;
-        if(Number.isFinite(cfg.rng.max)) state.rngMax = cfg.rng.max;
-      }
-      alert('Imported.');
+      applyConfig(cfg); alert('Imported.');
+      renderCatChips(); renderEndgame(); renderRngEditors();
     };
+  }
+
+  // ---------- presets UI ----------
+  function refreshPresetSelect(){
+    const sel = $('#presetSelect'); sel.innerHTML='';
+    // Built-ins
+    for(const p of BUILTIN_PRESETS){
+      const o = document.createElement('option'); o.value = `url|${p.url}`; o.textContent = p.label; sel.appendChild(o);
+    }
+    // Saved (local)
+    const saved = state.presets;
+    Object.keys(saved).sort().forEach(name=>{
+      const o = document.createElement('option'); o.value = `local|${name}`; o.textContent = `(Saved) ${name}`; sel.appendChild(o);
+    });
+  }
+
+  async function handleLoadPreset(){
+    const val = $('#presetSelect').value;
+    if(!val) return;
+    const [kind, key] = val.split('|');
+    try{
+      if(kind==='url'){
+        await seedFrom(key);
+        alert(`Loaded preset: ${key}`);
+      }else{
+        const saved = state.presets[key];
+        if(!saved) throw new Error('Missing saved preset');
+        applyConfig(saved);
+        alert(`Loaded saved preset: ${key}`);
+      }
+      renderCatChips(); renderEndgame(); renderRngEditors();
+    }catch(e){
+      alert('Could not load preset. If using a file (e.g., data-v5.json), make sure it exists in your repo root.');
+    }
+  }
+
+  function handleSavePreset(){
+    const name = prompt('Preset name (e.g., "Version 5" or "Date Night A")');
+    if(!name) return;
+    const saved = state.presets;
+    saved[name] = {
+      version: Date.now(),
+      categories: state.cats,
+      cards: state.cards,
+      rng: { actions: state.rngActions, parts: state.rngParts, mode: state.rngMode, min: state.rngMin, max: state.rngMax }
+    };
+    state.presets = saved;
+    refreshPresetSelect();
+    // auto-select the new saved preset
+    $('#presetSelect').value = `local|${name}`;
+    alert('Saved current content as a preset on this device.');
   }
 
   // ---------- Cards game ----------
@@ -411,7 +452,6 @@
 
   // ---------- Customize: Cards ----------
   function renderCustomizeCards(){
-    // category toggles
     const host = $('#catEditor'); host.innerHTML='';
     const enabled = new Set(state.enabled.length?state.enabled:state.cats.filter(c=>c.enabled_default).map(c=>c.id));
     for(const c of state.cats){
@@ -420,10 +460,8 @@
       chip.onclick = ()=>{ enabled.has(c.id)?enabled.delete(c.id):enabled.add(c.id); state.enabled=Array.from(enabled); renderCustomizeCards(); };
       host.appendChild(chip);
     }
-    // category select
     const sel = $('#fCategory'); sel.innerHTML='';
     for(const c of state.cats){ const o=document.createElement('option'); o.value=c.id; o.textContent=c.name; sel.appendChild(o); }
-    // card list
     const list = $('#cardList'); list.innerHTML='';
     for(const c of state.cards){
       const row = document.createElement('div'); row.className='card';
@@ -443,7 +481,8 @@
     }
     list.querySelectorAll('button.edit').forEach(b=>b.onclick=()=>{
       const c = state.cards.find(x=>x.id===b.dataset.id);
-      $('#fCategory').value=c.category_id; $('#fIntensity').value=c.intensity; $('#fPrompt').value=c.prompt; $('#fMin').value=c.min_sec; $('#fMax').value=c.max_sec; $('#saveCard').dataset.editing=c.id;
+      $('#fCategory').value=c.category_id; $('#fIntensity').value=c.intensity; $('#fPrompt').value=c.prompt;
+      $('#fMin').value=c.min_sec; $('#fMax').value=c.max_sec; $('#saveCard').dataset.editing=c.id;
     });
     list.querySelectorAll('button.del').forEach(b=>b.onclick=()=>{
       if(!confirm('Delete this card?')) return;
@@ -458,9 +497,7 @@
   $('#saveCard').onclick=()=>{
     const id = $('#saveCard').dataset.editing || `c_${Date.now()}`;
     const newCard = {
-      id,
-      category_id: $('#fCategory').value,
-      prompt: $('#fPrompt').value.trim(),
+      id, category_id: $('#fCategory').value, prompt: $('#fPrompt').value.trim(),
       min_sec: Math.max(10, parseInt($('#fMin').value||'60',10)),
       max_sec: Math.max(10, parseInt($('#fMax').value||'180',10)),
       intensity: Math.min(3, Math.max(1, parseInt($('#fIntensity').value||'1',10))),
@@ -474,7 +511,7 @@
     $('#fPrompt').value=''; $('#fMin').value=60; $('#fMax').value=180; $('#fIntensity').value=1;
     renderCustomizeCards();
   };
-  $('#resetCards').onclick=()=>{ if(!confirm('Reset to starter deck?')) return; fetch('./data.json').then(r=>r.json()).then(cfg=>{ state.cards = cfg.cards; renderCustomizeCards(); }).catch(()=>alert('Offline; try later.')); };
+  $('#resetCards').onclick=()=>{ if(!confirm('Reset to starter deck?')) return; seedFrom('./data.json').then(()=>renderCustomizeCards()).catch(()=>alert('Offline; try later.')); };
 
   // ---------- RNG Platform ----------
   function renderRngEditors(){
@@ -482,20 +519,12 @@
     state.rngActions.forEach((a,i)=>{ const chip=document.createElement('button'); chip.className='chip'; chip.textContent=a; chip.title='Remove'; chip.onclick=()=>{ const x=[...state.rngActions]; x.splice(i,1); state.rngActions=x; renderRngEditors(); }; aHost.appendChild(chip); });
     const pHost = $('#rngPartsList'); pHost.innerHTML='';
     state.rngParts.forEach((p,i)=>{ const chip=document.createElement('button'); chip.className='chip'; chip.textContent=p; chip.title='Remove'; chip.onclick=()=>{ const x=[...state.rngParts]; x.splice(i,1); state.rngParts=x; renderRngEditors(); }; pHost.appendChild(chip); });
-    $('#rngMode').value = state.rngMode;
-    $('#rngMin').value = state.rngMin;
-    $('#rngMax').value = state.rngMax;
+    $('#rngMode').value = state.rngMode; $('#rngMin').value = state.rngMin; $('#rngMax').value = state.rngMax;
   }
   function rngRollAction(){ const A=state.rngActions; if(!A.length) return alert('Add actions first.'); const a=A[Math.floor(Math.random()*A.length)]; state.rngSession = {...state.rngSession, a}; renderRngCombo(); }
   function rngRollBodyA(){ const P=state.rngParts; if(!P.length) return alert('Add body parts first.'); const b1=P[Math.floor(Math.random()*P.length)]; state.rngSession = {...state.rngSession, b1}; renderRngCombo(); }
-  function rngRollBodyB(){ const P=state.rngParts; if(!P.length) { state.rngSession={...state.rngSession,b2:null}; renderRngCombo(); return; } const b2 = Math.random()<0.5 ? null : P[Math.floor(Math.random()*P.length)]; state.rngSession = {...state.rngSession, b2}; renderRngCombo(); }
-  function rngRollQuant(){
-    const min = Math.max(1, parseInt(state.rngMin||'1',10));
-    const max = Math.max(min, parseInt(state.rngMax||'5',10));
-    const q = Math.floor(min + Math.random()*(max-min+1));
-    state.rngSession = {...state.rngSession, quant:q};
-    renderRngCombo();
-  }
+  function rngRollBodyB(){ const P=state.rngParts; const b2 = (!P.length || Math.random()<0.5) ? null : P[Math.floor(Math.random()*P.length)]; state.rngSession = {...state.rngSession, b2}; renderRngCombo(); }
+  function rngRollQuant(){ const min=Math.max(1,parseInt(state.rngMin||'1',10)); const max=Math.max(min,parseInt(state.rngMax||'5',10)); const q=Math.floor(min+Math.random()*(max-min+1)); state.rngSession = {...state.rngSession, quant:q}; renderRngCombo(); }
   function rngAll(){ rngRollAction(); rngRollBodyA(); rngRollBodyB(); rngRollQuant(); }
   function rngDoubleDare(){
     const A=state.rngActions; if(!A.length) return alert('Add actions first.');
@@ -513,24 +542,17 @@
     $('#rngTimerText').textContent = mmss(secs);
   }
 
-  // ---------- rng editor buttons ----------
-  $('#rngActionAdd').onclick = ()=>{ const v=$('#rngActionInput').value.trim(); if(!v) return; state.rngActions=[...state.rngActions,v]; $('#rngActionInput').value=''; renderRngEditors(); };
-  $('#rngPartAdd').onclick = ()=>{ const v=$('#rngPartInput').value.trim(); if(!v) return; state.rngParts=[...state.rngParts,v]; $('#rngPartInput').value=''; renderRngEditors(); };
-  $('#rngSaveRange').onclick = ()=>{ const mode=$('#rngMode').value; const mn=parseInt($('#rngMin').value||'1',10); const mx=parseInt($('#rngMax').value||'5',10); if(mx<mn){ alert('Max must be ≥ Min'); return; } state.rngMode=mode; state.rngMin=mn; state.rngMax=mx; alert('Saved.'); };
-  $('#rngReset').onclick = ()=>{ if(!confirm('Reset RNG defaults?')) return; fetch('./data.json').then(r=>r.json()).then(cfg=>{ state.rngActions=cfg.rng.actions; state.rngParts=cfg.rng.parts; state.rngMode=cfg.rng.mode; state.rngMin=cfg.rng.min; state.rngMax=cfg.rng.max; renderRngEditors(); }).catch(()=>alert('Offline; try later.')); };
-
   // ---------- events ----------
   $('#unlock').onclick = unlock; $('#setpin').onclick = setPin;
-  $('#playCards').onclick = ()=>{ show('cards'); renderCatChips(); renderEndgame(); };
-  $('#playRng').onclick   = ()=>{ show('rng'); renderRngCombo(); };
-  $$('.backHome').forEach(b=> b.onclick = ()=> show('home'));
+  $('#goCards').onclick = ()=>{ show('cards'); renderCatChips(); renderEndgame(); };
+  $('#goRng').onclick   = ()=>{ show('rng'); renderRngCombo(); };
   $('#goCustomize').onclick = ()=>{ show('customCards'); renderCustomizeCards(); };
   $('#goCustomizeRng').onclick = ()=>{ show('customRng'); renderRngEditors(); };
 
   // cards buttons
   $('#drawCard').onclick = ()=> drawCard(false);
   $('#skipCard').onclick = ()=> drawCard(true);
-  $('#timerCard').onclick = ()=>{ timeTarget = '#cardTime'; openTimer(state.session.secs||60); };
+  $('#timerCard').onclick = ()=>{ timeTarget = '#cardTime'; const secs = state.session.secs||60; openTimer(secs); };
 
   // rng buttons
   $('#rollAction').onclick = rngRollAction;
@@ -541,10 +563,19 @@
   $('#rngDouble').onclick = rngDoubleDare;
   $('#rngTimer').onclick = ()=>{ const mode=state.rngMode; const q=state.rngSession.quant||60; const secs = (mode==='seconds')? q : Math.max(60, q*10); timeTarget='#rngTimerText'; openTimer(secs); };
 
+  // presets
+  $('#loadPreset').onclick = handleLoadPreset;
+  $('#savePreset').onclick = handleSavePreset;
+
   // ---------- boot ----------
   (async function(){
-    await seedFromDataJson();
+    // initial seed (first run only)
+    try{
+      const localVer = store.get(K.DATA_VER, 0);
+      if(!localVer){ await seedFrom('./data.json'); }
+    }catch(_){}
     bindSettings();
+    refreshPresetSelect();
     if('serviceWorker' in navigator){ navigator.serviceWorker.register('./sw.js').catch(()=>{}); }
     show('gate');
   })();
