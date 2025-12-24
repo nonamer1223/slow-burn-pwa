@@ -1,24 +1,67 @@
 {
-  "version": 1,
+  "version": 4,
   "categories": [
-    {"id":"emo","name":"Emotional Foreplay","enabled_default":true},
-    {"id":"sens","name":"Sensual Tease","enabled_default":true},
-    {"id":"swap","name":"Control Swap","enabled_default":true},
-    {"id":"wild","name":"Wild Cards","enabled_default":false},
-    {"id":"endg","name":"Endgame Options","enabled_default":true}
+    { "id": "emo",  "name": "Emotional Foreplay", "enabled_default": true },
+    { "id": "sens", "name": "Sensual Tease",       "enabled_default": true },
+    { "id": "swap", "name": "Control Swap",        "enabled_default": true },
+    { "id": "wild", "name": "Wild Cards",          "enabled_default": false },
+    { "id": "endg", "name": "Endgame Options",     "enabled_default": true }
   ],
+
   "cards": [
-    {"id":"emo_01","category_id":"emo","prompt":"Share one thing you admire about your partner and why.","min_sec":30,"max_sec":90,"intensity":1,"active":true},
-    {"id":"emo_02","category_id":"emo","prompt":"Maintain eye contact and breathe together. Match inhales and exhales.","min_sec":60,"max_sec":180,"intensity":1,"active":true},
-    {"id":"sens_01","category_id":"sens","prompt":"Slow hand massage: fingertips only, deliberate and light.","min_sec":60,"max_sec":180,"intensity":2,"active":true},
-    {"id":"wild_01","category_id":"wild","prompt":"Roll a die: 1–2 share a secret; 3–4 gentle tease; 5–6 playful dare (PG-13).","min_sec":45,"max_sec":90,"intensity":2,"active":true},
-    {"id":"endg_02","category_id":"endg","prompt":"Mutual back massage and soft words of appreciation.","min_sec":120,"max_sec":300,"intensity":1,"active":true}
+    {
+      "id": "sens_custom_1",
+      "category_id": "sens",
+      "prompt": "sStrip and tease, test limits, but no orgasms yet!",
+      "min_sec": 60,
+      "max_sec": 180,
+      "intensity": 2,
+      "active": true
+    },
+    {
+      "id": "swap_custom_1",
+      "category_id": "swap",
+      "prompt": "Wife: massage his prostate. OR Husband: tongue actions",
+      "min_sec": 60,
+      "max_sec": 180,
+      "intensity": 3,
+      "active": true
+    },
+    {
+      "id": "endg_custom_1",
+      "category_id": "endg",
+      "prompt": "cuddle",
+      "min_sec": 120,
+      "max_sec": 300,
+      "intensity": 1,
+      "active": true
+    }
   ],
+
   "rng": {
-    "actions": ["Kiss","Caress","Massage","Trace letters","Whisper","Compliment","Hold hands","Breathe together"],
-    "parts": ["Neck","Shoulders","Back","Arms","Hands","Waist","Hips","Legs","Ears","Hair"],
+    "actions": [
+      "Tongue the alphabet",
+      "Gentle tongue circles",
+      "lollipop suck",
+      "drool on",
+      "Mirror their motion",
+      "Lead and ask for feedback",
+      "Stick in",
+      "pee on"
+    ],
+    "parts": [
+      "Neck (side)",
+      "Boobs",
+      "Nipple",
+      "Butthole",
+      "clit/tip",
+      "Earlobe",
+      "booty",
+      "partners choice",
+      "genital"
+    ],
     "mode": "times",
     "min": 1,
-    "max": 5
+    "max": 7
   }
 }
