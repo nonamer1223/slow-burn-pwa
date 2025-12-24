@@ -1,0 +1,493 @@
+<!-- index.html -->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Slow Burn</title>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#0e0e12">
+  <style>
+    :root{--bg:#0e0e12;--card:#15151d;--fg:#f6f2ff;--muted:#b7a7d9;--line:#222436;--accent:#d16ba5;}
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;background:var(--bg);color:var(--fg);font:500 16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
+    a{color:var(--muted);text-decoration:none}
+    .wrap{max-width:760px;margin:0 auto;padding:20px}
+    .brand{display:flex;align-items:center;gap:12px;margin:8px 0 20px}
+    .brand h1{font-size:28px;margin:0}
+    .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;margin:14px 0;box-shadow:0 10px 40px rgba(0,0,0,.25)}
+    .row{display:flex;gap:12px;flex-wrap:wrap}
+    .grid{display:grid;gap:12px}
+    .grid.cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    button{appearance:none;border:1px solid var(--line);background:#1b1b27;color:var(--fg);padding:12px 14px;border-radius:12px;font-weight:700;cursor:pointer}
+    button:active{transform:translateY(1px)}
+    .btn-accent{background:var(--accent);color:#100b12;border-color:#000}
+    .btn-ghost{background:transparent}
+    input,select,textarea{width:100%;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:#0f0f16;color:var(--fg)}
+    label{font-size:13px;color:var(--muted)}
+    .muted{color:var(--muted);font-size:14px}
+    .big{font-size:18px;font-weight:800}
+    .center{text-align:center}
+    .hidden{display:none}
+    .pill{display:inline-block;padding:4px 10px;border-radius:999px;border:1px solid var(--line);font-size:12px;color:var(--muted)}
+    .timer{font-size:64px;font-weight:900;letter-spacing:1px;margin:6px 0 12px}
+    hr{border:none;border-top:1px solid var(--line);margin:12px 0}
+    .chips{display:flex;gap:8px;flex-wrap:wrap}
+    .chip{padding:6px 10px;border:1px solid var(--line);border-radius:999px;background:#151523;cursor:pointer}
+    .chip.active{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}
+    .danger{color:#ff8f8f}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="brand">
+      <svg width="28" height="28" viewBox="0 0 60 60" fill="none" aria-hidden="true">
+        <circle cx="30" cy="30" r="28" stroke="#d16ba5" stroke-width="2"/><path d="M18 40 C18 28, 42 28, 42 40 C42 48, 18 48, 18 40Z" fill="#d16ba5"/>
+      </svg>
+      <h1>Slow Burn</h1><span class="pill">offline • private</span>
+    </div>
+
+    <!-- PIN Gate -->
+    <div id="gate" class="card">
+      <div class="grid cols-2">
+        <div>
+          <label for="pin">Enter PIN to unlock</label>
+          <input id="pin" inputmode="numeric" autocomplete="off" placeholder="••••" />
+          <div class="row" style="margin-top:10px">
+            <button id="unlock" class="btn-accent">Unlock</button>
+            <button id="setpin" class="">Set/Change PIN</button>
+          </div>
+        </div>
+        <div>
+          <p class="muted">
+            Keep it slow. Consent is continuous. Speak up: “more”, “less”, “slower”, “pause”.
+            Use the timer to build anticipation. Enjoy the slow burn.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Home -->
+    <div id="home" class="hidden">
+      <div class="card">
+        <div class="row">
+          <button id="goPlay" class="btn-accent big" style="flex:1">Start the Game</button>
+          <button id="goCustomize" class="big" style="flex:1">Customize Challenges</button>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Settings</h3>
+        <div class="grid cols-2">
+          <div>
+            <label>Ambient sounds</label>
+            <select id="musicToggle">
+              <option value="off">Off</option>
+              <option value="on">On</option>
+            </select>
+          </div>
+          <div>
+            <label>Daily reminder (local)</label>
+            <select id="dailyToggle">
+              <option value="off">Off</option>
+              <option value="on">On</option>
+            </select>
+          </div>
+          <div class="grid" style="grid-column:1 / -1">
+            <label>Timer URL (optional)</label>
+            <input id="timerUrl" placeholder="(leave blank to use built-in timer)" />
+          </div>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Game Rules & Instructions</h3>
+        <p class="muted">
+          Keep it slow. Focus on teasing, sensations, and connection. Consent is continuous—stop anytime. 
+          Use the timer to build anticipation. No explicit goals—enjoy the slow burn.
+        </p>
+      </div>
+      <div class="card">
+        <h3>Aftercare & Cooldown</h3>
+        <p class="muted">
+          Water + cuddles + warm blanket. Two minutes of synced breathing. Share a highlight and a gratitude. 
+          Gentle stretch. If intense, add a longer cuddle timer.
+        </p>
+      </div>
+    </div>
+
+    <!-- Play -->
+    <div id="play" class="hidden">
+      <div class="card">
+        <div class="chips" id="categoryChips"></div>
+        <hr/>
+        <div id="prompt" class="big">Draw a challenge</div>
+        <div id="time" class="timer">00:00</div>
+        <div class="row">
+          <button id="draw" class="btn-accent" style="flex:1">Draw Challenge</button>
+          <button id="skip" style="flex:1">Skip</button>
+          <button id="startTimer" class="btn-ghost" style="flex:1">Start Timer</button>
+        </div>
+      </div>
+      <div class="card">
+        <h3>Endgame Options</h3>
+        <ul id="endgameList" class="muted" style="margin:0;padding-left:18px"></ul>
+      </div>
+      <div class="card">
+        <button id="backHome">← Back to Home</button>
+      </div>
+    </div>
+
+    <!-- Customize -->
+    <div id="customize" class="hidden">
+      <div class="card">
+        <h3>Categories</h3>
+        <div id="catEditor" class="chips"></div>
+        <p class="muted">Toggle which categories are in play.</p>
+      </div>
+      <div class="card">
+        <h3>Cards</h3>
+        <div id="cardList"></div>
+        <hr/>
+        <h4>Add / Edit</h4>
+        <div class="grid cols-2">
+          <div>
+            <label>Category</label>
+            <select id="fCategory"></select>
+          </div>
+          <div>
+            <label>Intensity (1-3)</label>
+            <input id="fIntensity" type="number" min="1" max="3" value="1">
+          </div>
+          <div class="grid" style="grid-column:1 / -1">
+            <label>Prompt</label>
+            <textarea id="fPrompt" rows="3" placeholder="Describe the challenge..."></textarea>
+          </div>
+          <div>
+            <label>Min Seconds</label>
+            <input id="fMin" type="number" min="10" value="60">
+          </div>
+          <div>
+            <label>Max Seconds</label>
+            <input id="fMax" type="number" min="10" value="180">
+          </div>
+        </div>
+        <div class="row" style="margin-top:10px">
+          <button id="saveCard" class="btn-accent">Save Card</button>
+          <button id="resetCards" class="danger">Reset to Starter Deck</button>
+        </div>
+      </div>
+      <div class="card">
+        <button id="backHome2">← Back to Home</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ---- Utilities ----
+    const $ = sel => document.querySelector(sel);
+    const $$ = sel => Array.from(document.querySelectorAll(sel));
+    const pad2 = n => String(n).padStart(2,'0');
+    const mmss = s => `${pad2(Math.floor(s/60))}:${pad2(Math.max(0,Math.floor(s%60)))}`;
+
+    async function sha256(text){
+      const data = new TextEncoder().encode(text);
+      const hash = await crypto.subtle.digest('SHA-256', data);
+      return Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,'0')).join('');
+    }
+
+    // ---- Storage ----
+    const store = {
+      get(k, v){ try{ return JSON.parse(localStorage.getItem(k)) ?? v; }catch(_){ return v; } },
+      set(k, v){ localStorage.setItem(k, JSON.stringify(v)); }
+    };
+
+    // Keys
+    const K = {
+      CATS: 'sb_categories',
+      CARDS: 'sb_cards',
+      ENABLED: 'sb_enabled',        // array of category ids
+      PINHASH: 'sb_pin_hash',
+      MUSIC: 'sb_music',
+      DAILY: 'sb_daily',
+      TIMERURL: 'sb_timer_url',
+      SESSION: 'sb_session'        // {selected, secs}
+    };
+
+    // ---- Seed Data (PG-13) ----
+    const SEED_CATS = [
+      {id:'emo', name:'Emotional Foreplay', enabled_default:true},
+      {id:'sens', name:'Sensual Tease', enabled_default:true},
+      {id:'swap', name:'Control Swap', enabled_default:true},
+      {id:'wild', name:'Wild Cards', enabled_default:false},
+      {id:'endg', name:'Endgame Options', enabled_default:true},
+    ];
+    const SEED_CARDS = [
+      {id:'emo_01',category_id:'emo',prompt:'Share one thing you admire about your partner and why.',min_sec:30,max_sec:90,intensity:1,active:true},
+      {id:'emo_02',category_id:'emo',prompt:'Maintain eye contact and breathe together. Match inhales and exhales.',min_sec:60,max_sec:180,intensity:1,active:true},
+      {id:'emo_03',category_id:'emo',prompt:'Whisper three compliments—one playful, one sincere, one surprising.',min_sec:45,max_sec:120,intensity:1,active:true},
+      {id:'sens_01',category_id:'sens',prompt:'Slow hand massage: fingertips only, deliberate and light.',min_sec:60,max_sec:180,intensity:2,active:true},
+      {id:'sens_02',category_id:'sens',prompt:'Trace letters on their skin and let them guess the word.',min_sec:45,max_sec:120,intensity:2,active:true},
+      {id:'sens_03',category_id:'sens',prompt:'Kiss everywhere except the lips; save those for later.',min_sec:60,max_sec:180,intensity:2,active:true},
+      {id:'swap_01',category_id:'swap',prompt:'Control Swap: Decide who leads. Leader guides touch; receiver gives feedback.',min_sec:60,max_sec:180,intensity:3,active:true},
+      {id:'swap_02',category_id:'swap',prompt:'Leader sets a teasing pace; receiver can say “slower” or “pause” only.',min_sec:60,max_sec:180,intensity:3,active:true},
+      {id:'swap_03',category_id:'swap',prompt:'Switch roles and repeat the last tease, 10% slower.',min_sec:45,max_sec:120,intensity:3,active:true},
+      {id:'wild_01',category_id:'wild',prompt:'Roll a die: 1–2 share a secret; 3–4 gentle tease; 5–6 playful dare (PG-13).',min_sec:45,max_sec:90,intensity:2,active:true},
+      {id:'wild_02',category_id:'wild',prompt:'Blindfold improv: one uses voice-only guidance for gentle touch exploration.',min_sec:60,max_sec:180,intensity:3,active:true},
+      {id:'wild_03',category_id:'wild',prompt:'Pick a song; move together without speaking until it ends.',min_sec:90,max_sec:180,intensity:2,active:true},
+      {id:'endg_01',category_id:'endg',prompt:'Edge & breathe: approach, pause, and ground with deep breaths together.',min_sec:60,max_sec:180,intensity:3,active:true},
+      {id:'endg_02',category_id:'endg',prompt:'Mutual back massage and soft words of appreciation.',min_sec:120,max_sec:300,intensity:1,active:true},
+      {id:'endg_03',category_id:'endg',prompt:'Cuddle cooldown: hold each other; slow inhales for four counts, exhales for six.',min_sec:120,max_sec:300,intensity:1,active:true},
+    ];
+
+    function initData(){
+      if(!store.get(K.CATS)) store.set(K.CATS, SEED_CATS);
+      if(!store.get(K.CARDS)) store.set(K.CARDS, SEED_CARDS);
+      if(!store.get(K.ENABLED)) {
+        const def = SEED_CATS.filter(c=>c.enabled_default).map(c=>c.id);
+        store.set(K.ENABLED, def);
+      }
+      if(store.get(K.MUSIC)===null) store.set(K.MUSIC, 'off');
+      if(store.get(K.DAILY)===null) store.set(K.DAILY, 'off');
+      if(!store.get(K.SESSION)) store.set(K.SESSION, {selected:null, secs:0});
+    }
+
+    // ---- State helpers ----
+    const state = {
+      get cats(){ return store.get(K.CATS, []); },
+      set cats(v){ store.set(K.CATS, v); },
+      get cards(){ return store.get(K.CARDS, []); },
+      set cards(v){ store.set(K.CARDS, v); },
+      get enabled(){ return store.get(K.ENABLED, []); },
+      set enabled(v){ store.set(K.ENABLED, v); },
+      get session(){ return store.get(K.SESSION, {selected:null, secs:0}); },
+      set session(v){ store.set(K.SESSION, v); },
+      get pinHash(){ return store.get(K.PINHASH, ''); },
+      set pinHash(v){ store.set(K.PINHASH, v); },
+      get music(){ return store.get(K.MUSIC, 'off'); },
+      set music(v){ store.set(K.MUSIC, v); },
+      get daily(){ return store.get(K.DAILY, 'off'); },
+      set daily(v){ store.set(K.DAILY, v); },
+      get timerUrl(){ return store.get(K.TIMERURL, ''); },
+      set timerUrl(v){ store.set(K.TIMERURL, v); },
+    };
+
+    // ---- UI wiring ----
+    function show(id){
+      for(const el of ['gate','home','play','customize'].map(x=>document.getElementById(x))){
+        if(!el) continue;
+        el.classList.toggle('hidden', el.id!==id);
+      }
+    }
+
+    function locked(){ return !state.pinHash; } // if no pin set, consider locked until user sets/unlocks once
+
+    async function tryUnlock(){
+      const pin = $('#pin').value.trim();
+      if(!pin && state.pinHash){ alert('Enter PIN'); return; }
+      if(!state.pinHash){
+        // first-time: allow unlocking without a set pin (but encourage setting one)
+        show('home'); return;
+      }
+      const h = await sha256(pin);
+      if(h === state.pinHash){ show('home'); $('#pin').value=''; }
+      else alert('Wrong PIN');
+    }
+
+    async function setOrChangePin(){
+      const pin = $('#pin').value.trim();
+      if(!pin){ alert('Enter a new PIN first'); return; }
+      const h = await sha256(pin);
+      state.pinHash = h;
+      $('#pin').value='';
+      alert('PIN set. Keep it secret.');
+      show('home');
+    }
+
+    // Home settings
+    function bindSettings(){
+      $('#musicToggle').value = state.music;
+      $('#musicToggle').onchange = e => state.music = e.target.value;
+      $('#dailyToggle').value = state.daily;
+      $('#dailyToggle').onchange = e => state.daily = e.target.value;
+      $('#timerUrl').value = state.timerUrl;
+      $('#timerUrl').oninput = e => state.timerUrl = e.target.value.trim();
+    }
+
+    // Category chips & editor
+    function renderChips(){
+      const chips = $('#categoryChips'); chips.innerHTML='';
+      const enabled = new Set(state.enabled);
+      for(const c of state.cats){
+        const b = document.createElement('button');
+        b.className = 'chip'+(enabled.has(c.id)?' active':'');
+        b.textContent = c.name;
+        b.onclick = ()=> {
+          enabled.has(c.id) ? enabled.delete(c.id) : enabled.add(c.id);
+          state.enabled = Array.from(enabled);
+          renderChips();
+        };
+        chips.appendChild(b);
+      }
+    }
+
+    function renderEndgame(){
+      const list = $('#endgameList'); list.innerHTML='';
+      const cards = state.cards.filter(x=>x.active && x.category_id==='endg');
+      for(const c of cards){
+        const li = document.createElement('li'); li.textContent = c.prompt; list.appendChild(li);
+      }
+    }
+
+    function renderCustomize(){
+      // Category toggle editor
+      const host = $('#catEditor'); host.innerHTML='';
+      const enabled = new Set(state.enabled);
+      for(const c of state.cats){
+        const chip = document.createElement('button');
+        chip.className = 'chip'+(enabled.has(c.id)?' active':'');
+        chip.textContent = c.name;
+        chip.onclick = ()=>{ enabled.has(c.id)?enabled.delete(c.id):enabled.add(c.id); state.enabled = Array.from(enabled); renderCustomize(); };
+        host.appendChild(chip);
+      }
+      // Category select dropdown
+      const sel = $('#fCategory'); sel.innerHTML='';
+      for(const c of state.cats){
+        const o = document.createElement('option'); o.value=c.id; o.textContent=c.name; sel.appendChild(o);
+      }
+      // Card list
+      const list = $('#cardList'); list.innerHTML='';
+      for(const c of state.cards){
+        const row = document.createElement('div');
+        row.className='card';
+        row.innerHTML = `
+          <div class="row" style="align-items:flex-start">
+            <div style="flex:1">
+              <div class="muted">${c.category_id.toUpperCase()} • intensity ${c.intensity} • ${c.active?'active':'inactive'}</div>
+              <div>${c.prompt}</div>
+              <div class="muted">Duration: ${c.min_sec}-${c.max_sec}s</div>
+            </div>
+            <div class="row">
+              <button data-id="${c.id}" class="edit">Edit</button>
+              <button data-id="${c.id}" class="del danger">Delete</button>
+              <button data-id="${c.id}" class="toggle">${c.active?'Disable':'Enable'}</button>
+            </div>
+          </div>`;
+        list.appendChild(row);
+      }
+      list.querySelectorAll('button.edit').forEach(b=>b.onclick = () => {
+        const c = state.cards.find(x=>x.id===b.dataset.id);
+        $('#fCategory').value = c.category_id;
+        $('#fIntensity').value = c.intensity;
+        $('#fPrompt').value = c.prompt;
+        $('#fMin').value = c.min_sec;
+        $('#fMax').value = c.max_sec;
+        $('#saveCard').dataset.editing = c.id;
+      });
+      list.querySelectorAll('button.del').forEach(b=>b.onclick = () => {
+        if(!confirm('Delete this card?')) return;
+        state.cards = state.cards.filter(x=>x.id!==b.dataset.id);
+        renderCustomize();
+      });
+      list.querySelectorAll('button.toggle').forEach(b=>b.onclick = () => {
+        state.cards = state.cards.map(x=> x.id===b.dataset.id ? {...x, active:!x.active} : x);
+        renderCustomize();
+      });
+    }
+
+    // Draw logic
+    function eligibleCards(excludeId=null){
+      const enabled = new Set(state.enabled.length?state.enabled:SEED_CATS.filter(c=>c.enabled_default).map(c=>c.id));
+      return state.cards.filter(c => c.active && enabled.has(c.category_id) && (!excludeId || c.id!==excludeId) && c.category_id!=='endg');
+    }
+    function drawCard(skip=false){
+      const pool = eligibleCards(skip ? state.session.selected : null);
+      if(!pool.length){ alert('No eligible cards. Enable categories or add cards.'); return; }
+      const pick = pool[Math.floor(Math.random()*pool.length)];
+      const secs = randInt(pick.min_sec, pick.max_sec);
+      state.session = {selected: pick.id, secs};
+      renderPlay();
+    }
+    function randInt(a,b){ return Math.floor(a + Math.random()*(b-a+1)); }
+
+    function renderPlay(){
+      const sel = state.cards.find(c=>c.id===state.session.selected);
+      $('#prompt').textContent = sel ? sel.prompt : 'Draw a challenge';
+      $('#time').textContent = mmss(state.session.secs||0);
+    }
+
+    // Built-in timer (page-level)
+    let tHandle=null, tLeft=0, running=false, lastTs=0;
+    function startLocalTimer(){
+      tLeft = state.session.secs || 60; running=true; lastTs=0;
+      const loop = ts=>{
+        if(!running) return;
+        if(!lastTs) lastTs=ts;
+        const d=(ts-lastTs)/1000; lastTs=ts; tLeft-=d;
+        if(tLeft<=0){ tLeft=0; running=false; try{ new Audio('https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg').play(); }catch(e){} }
+        $('#time').textContent = mmss(tLeft);
+        if(running) tHandle = requestAnimationFrame(loop);
+      };
+      tHandle = requestAnimationFrame(loop);
+    }
+
+    // ---- Events ----
+    $('#unlock').onclick = tryUnlock;
+    $('#setpin').onclick = setOrChangePin;
+    $('#goPlay').onclick = ()=>{ show('play'); renderChips(); renderEndgame(); renderPlay(); };
+    $('#goCustomize').onclick = ()=>{ show('customize'); renderCustomize(); };
+    $('#backHome').onclick = ()=> show('home');
+    $('#backHome2').onclick = ()=> show('home');
+    $('#draw').onclick = ()=> drawCard(false);
+    $('#skip').onclick = ()=> drawCard(true);
+    $('#startTimer').onclick = ()=>{
+      const url = state.timerUrl?.trim();
+      if(url){
+        const secs = Math.max(1, Math.floor(state.session.secs||60));
+        window.open(`${url}?sec=${secs}&label=${encodeURIComponent('Slow Burn')}`,'_blank');
+      }else{
+        startLocalTimer();
+      }
+    };
+    $('#saveCard').onclick = ()=>{
+      const id = $('#saveCard').dataset.editing || `c_${Date.now()}`;
+      const newCard = {
+        id,
+        category_id: $('#fCategory').value,
+        prompt: $('#fPrompt').value.trim(),
+        min_sec: Math.max(10, parseInt($('#fMin').value||'60',10)),
+        max_sec: Math.max(10, parseInt($('#fMax').value||'180',10)),
+        intensity: Math.min(3, Math.max(1, parseInt($('#fIntensity').value||'1',10))),
+        active: true
+      };
+      if(!newCard.prompt){ alert('Prompt required'); return; }
+      if(newCard.max_sec < newCard.min_sec){ alert('Max must be ≥ Min'); return; }
+      const editing = $('#saveCard').dataset.editing;
+      if(editing){
+        state.cards = state.cards.map(x=> x.id===editing ? newCard : x);
+        $('#saveCard').dataset.editing='';
+      }else{
+        state.cards = [...state.cards, newCard];
+      }
+      $('#fPrompt').value=''; $('#fMin').value=60; $('#fMax').value=180; $('#fIntensity').value=1;
+      renderCustomize();
+    };
+    $('#resetCards').onclick = ()=>{
+      if(!confirm('Reset to starter deck? This replaces all cards.')) return;
+      state.cards = SEED_CARDS.slice();
+      renderCustomize();
+    };
+
+    // ---- Boot ----
+    initData();
+    bindSettings();
+
+    // PWA
+    if('serviceWorker' in navigator){
+      navigator.serviceWorker.register('./sw.js').catch(()=>{});
+    }
+
+    // Show gate by default
+    show('gate');
+  </script>
+</body>
+</html>
