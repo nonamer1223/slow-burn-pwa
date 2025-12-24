@@ -1,24 +1,26 @@
-<!-- index.html -->
 <!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
   <title>Slow Burn</title>
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#0e0e12">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <style>
     :root{--bg:#0e0e12;--card:#15151d;--fg:#f6f2ff;--muted:#b7a7d9;--line:#222436;--accent:#d16ba5;}
     *{box-sizing:border-box} html,body{height:100%}
     body{margin:0;background:var(--bg);color:var(--fg);font:500 16px/1.5 system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial}
-    a{color:var(--muted);text-decoration:none}
-    .wrap{max-width:760px;margin:0 auto;padding:20px}
+    .wrap{max-width:880px;margin:0 auto;padding:20px}
     .brand{display:flex;align-items:center;gap:12px;margin:8px 0 20px}
     .brand h1{font-size:28px;margin:0}
+    .pill{display:inline-block;padding:4px 10px;border-radius:999px;border:1px solid var(--line);font-size:12px;color:var(--muted)}
     .card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px;margin:14px 0;box-shadow:0 10px 40px rgba(0,0,0,.25)}
     .row{display:flex;gap:12px;flex-wrap:wrap}
     .grid{display:grid;gap:12px}
-    .grid.cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
     button{appearance:none;border:1px solid var(--line);background:#1b1b27;color:var(--fg);padding:12px 14px;border-radius:12px;font-weight:700;cursor:pointer}
     button:active{transform:translateY(1px)}
     .btn-accent{background:var(--accent);color:#100b12;border-color:#000}
@@ -27,229 +29,525 @@
     label{font-size:13px;color:var(--muted)}
     .muted{color:var(--muted);font-size:14px}
     .big{font-size:18px;font-weight:800}
-    .center{text-align:center}
     .hidden{display:none}
-    .pill{display:inline-block;padding:4px 10px;border-radius:999px;border:1px solid var(--line);font-size:12px;color:var(--muted)}
     .timer{font-size:64px;font-weight:900;letter-spacing:1px;margin:6px 0 12px}
-    hr{border:none;border-top:1px solid var(--line);margin:12px 0}
     .chips{display:flex;gap:8px;flex-wrap:wrap}
     .chip{padding:6px 10px;border:1px solid var(--line);border-radius:999px;background:#151523;cursor:pointer}
     .chip.active{border-color:var(--accent);box-shadow:0 0 0 1px var(--accent) inset}
-    .danger{color:#ff8f8f}
     .title{font-size:22px;font-weight:800;margin:0 0 8px}
     .combo{font-size:22px;font-weight:800}
+    .danger{color:#ff8f8f}
+    hr{border:none;border-top:1px solid var(--line);margin:12px 0}
+    .kbd{font-family:ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size:12px; border:1px solid var(--line); border-radius:6px; padding:2px 6px; color:var(--muted)}
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <div class="brand">
-      <svg width="28" height="28" viewBox="0 0 60 60" fill="none" aria-hidden="true">
-        <circle cx="30" cy="30" r="28" stroke="#d16ba5" stroke-width="2"/><path d="M18 40 C18 28, 42 28, 42 40 C42 48, 18 48, 18 40Z" fill="#d16ba5"/>
-      </svg>
-      <h1>Slow Burn</h1><span class="pill">offline • private</span>
-    </div>
+<div class="wrap">
+  <div class="brand">
+    <svg width="28" height="28" viewBox="0 0 60 60" fill="none" aria-hidden="true">
+      <circle cx="30" cy="30" r="28" stroke="#d16ba5" stroke-width="2"/><path d="M18 40 C18 28, 42 28, 42 40 C42 48, 18 48, 18 40Z" fill="#d16ba5"/>
+    </svg>
+    <h1>Slow Burn</h1><span class="pill">offline • private • config-driven</span>
+  </div>
 
-    <!-- PIN Gate -->
-    <div id="gate" class="card">
-      <div class="grid cols-2">
-        <div>
-          <label for="pin">Enter PIN to unlock</label>
-          <input id="pin" inputmode="numeric" autocomplete="off" placeholder="••••" />
-          <div class="row" style="margin-top:10px">
-            <button id="unlock" class="btn-accent">Unlock</button>
-            <button id="setpin" class="">Set/Change PIN</button>
-          </div>
-        </div>
-        <div>
-          <p class="muted">Keep it slow. Consent is continuous. Speak up: “more”, “less”, “slower”, “pause”. Use the timer to build anticipation.</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- Home -->
-    <div id="home" class="hidden">
-      <div class="card">
-        <div class="row">
-          <button id="goPlayCards" class="btn-accent big" style="flex:1">Play: Challenge Cards</button>
-          <button id="goPlayRng" class="big" style="flex:1">Play: RNG Roulette</button>
-        </div>
-      </div>
-      <div class="card">
-        <h3>Settings</h3>
-        <div class="grid cols-2">
-          <div>
-            <label>Ambient sounds</label>
-            <select id="musicToggle"><option value="off">Off</option><option value="on">On</option></select>
-          </div>
-          <div>
-            <label>Daily reminder (local)</label>
-            <select id="dailyToggle"><option value="off">Off</option><option value="on">On</option></select>
-          </div>
-          <div class="grid" style="grid-column:1 / -1">
-            <label>Timer URL (optional)</label>
-            <input id="timerUrl" placeholder="(leave blank to use built-in timer)" />
-          </div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="row">
-          <button id="goCustomize" class="big" style="flex:1">Customize Challenges</button>
-          <button id="goCustomizeRng" class="big" style="flex:1">Customize RNG</button>
-        </div>
-      </div>
-      <div class="card">
-        <h3>Game Rules & Instructions</h3>
-        <p class="muted">Keep it slow. Focus on teasing, sensations, and connection. Consent is continuous—stop anytime. Use the timer to build anticipation.</p>
-      </div>
-      <div class="card">
-        <h3>Aftercare & Cooldown</h3>
-        <p class="muted">Water + cuddles + warm blanket. Two minutes of synced breathing. Share a highlight and a gratitude.</p>
-      </div>
-    </div>
-
-    <!-- Play: Cards -->
-    <div id="playCards" class="hidden">
-      <div class="card">
-        <div class="chips" id="categoryChips"></div>
-        <hr/>
-        <div id="prompt" class="big">Draw a challenge</div>
-        <div id="time" class="timer">00:00</div>
-        <div class="row">
-          <button id="draw" class="btn-accent" style="flex:1">Draw Challenge</button>
-          <button id="skip" style="flex:1">Skip</button>
-          <button id="startTimer" class="btn-ghost" style="flex:1">Start Timer</button>
-        </div>
-      </div>
-      <div class="card">
-        <h3>Endgame Options</h3>
-        <ul id="endgameList" class="muted" style="margin:0;padding-left:18px"></ul>
-      </div>
-      <div class="card"><button class="backHome">← Back to Home</button></div>
-    </div>
-
-    <!-- Play: RNG Roulette -->
-    <div id="playRng" class="hidden">
-      <div class="card">
-        <div class="title">RNG Roulette</div>
-        <div id="rngCombo" class="combo">Action × Body Part</div>
-        <div id="rngTime" class="timer">00:00</div>
-        <div class="row">
-          <button id="rngDraw" class="btn-accent" style="flex:1">Roll</button>
-          <button id="rngAgain" style="flex:1">Roll Again</button>
-          <button id="rngTimer" class="btn-ghost" style="flex:1">Start Timer</button>
-        </div>
-      </div>
-      <div class="card"><button class="backHome">← Back to Home</button></div>
-    </div>
-
-    <!-- Customize: Cards -->
-    <div id="customize" class="hidden">
-      <div class="card">
-        <h3>Categories</h3>
-        <div id="catEditor" class="chips"></div>
-        <p class="muted">Toggle which categories are in play.</p>
-      </div>
-      <div class="card">
-        <h3>Cards</h3>
-        <div id="cardList"></div>
-        <hr/>
-        <h4>Add / Edit</h4>
-        <div class="grid cols-2">
-          <div><label>Category</label><select id="fCategory"></select></div>
-          <div><label>Intensity (1-3)</label><input id="fIntensity" type="number" min="1" max="3" value="1"></div>
-          <div class="grid" style="grid-column:1 / -1"><label>Prompt</label><textarea id="fPrompt" rows="3"></textarea></div>
-          <div><label>Min Seconds</label><input id="fMin" type="number" min="10" value="60"></div>
-          <div><label>Max Seconds</label><input id="fMax" type="number" min="10" value="180"></div>
-        </div>
+  <!-- PIN Gate -->
+  <div id="gate" class="card">
+    <div class="grid cols-2">
+      <div>
+        <label for="pin">Enter PIN to unlock</label>
+        <input id="pin" inputmode="numeric" autocomplete="off" placeholder="••••"/>
         <div class="row" style="margin-top:10px">
-          <button id="saveCard" class="btn-accent">Save Card</button>
-          <button id="resetCards" class="danger">Reset to Starter Deck</button>
+          <button id="unlock" class="btn-accent">Unlock</button>
+          <button id="setpin">Set/Change PIN</button>
         </div>
       </div>
-      <div class="card"><button class="backHome">← Back to Home</button></div>
-    </div>
-
-    <!-- Customize: RNG -->
-    <div id="customizeRng" class="hidden">
-      <div class="card">
-        <h3>RNG Actions</h3>
-        <div id="rngActionsList" class="chips"></div>
-        <div class="row" style="margin-top:10px">
-          <input id="rngActionInput" placeholder="Add action..." />
-          <button id="rngActionAdd" class="btn-accent">Add</button>
-        </div>
+      <div>
+        <p class="muted">Keep it slow. Consent is continuous; stop anytime. Use the timer to build anticipation.</p>
       </div>
-      <div class="card">
-        <h3>RNG Body Parts</h3>
-        <div id="rngPartsList" class="chips"></div>
-        <div class="row" style="margin-top:10px">
-          <input id="rngPartInput" placeholder="Add body part..." />
-          <button id="rngPartAdd" class="btn-accent">Add</button>
-        </div>
-      </div>
-      <div class="card">
-        <h3>RNG Duration Range (seconds)</h3>
-        <div class="grid cols-2">
-          <div><label>Min</label><input id="rngMin" type="number" min="10" value="30"></div>
-          <div><label>Max</label><input id="rngMax" type="number" min="10" value="120"></div>
-        </div>
-        <div class="row" style="margin-top:10px">
-          <button id="rngSaveRange" class="btn-accent">Save Range</button>
-          <button id="rngReset" class="danger">Reset RNG Lists</button>
-        </div>
-      </div>
-      <div class="card"><button class="backHome">← Back to Home</button></div>
     </div>
   </div>
 
-  <script>
-    const $ = s => document.querySelector(s), $$ = s => Array.from(document.querySelectorAll(s));
-    const pad2 = n => String(n).padStart(2,'0');
-    const mmss = s => `${pad2(Math.floor(s/60))}:${pad2(Math.max(0,Math.floor(s%60)))}`;
-    async function sha256(t){const d=new TextEncoder().encode(t);const h=await crypto.subtle.digest('SHA-256',d);return Array.from(new Uint8Array(h)).map(b=>b.toString(16).padStart(2,'0')).join('');}
-    const store={get(k,v){try{return JSON.parse(localStorage.getItem(k))??v;}catch(_){return v;}},set(k,v){localStorage.setItem(k,JSON.stringify(v));}};
-    const K={CATS:'sb_categories',CARDS:'sb_cards',ENABLED:'sb_enabled',PINHASH:'sb_pin_hash',MUSIC:'sb_music',DAILY:'sb_daily',TIMERURL:'sb_timer_url',SESSION:'sb_session',RNG_ACTIONS:'sb_rng_actions',RNG_PARTS:'sb_rng_parts',RNG_MIN:'sb_rng_min',RNG_MAX:'sb_rng_max',RNG_SESSION:'sb_rng_session'};
-    const SEED_CATS=[{id:'emo',name:'Emotional Foreplay',enabled_default:true},{id:'sens',name:'Sensual Tease',enabled_default:true},{id:'swap',name:'Control Swap',enabled_default:true},{id:'wild',name:'Wild Cards',enabled_default:false},{id:'endg',name:'Endgame Options',enabled_default:true}];
-    const SEED_CARDS=[{id:'emo_01',category_id:'emo',prompt:'Share one thing you admire about your partner and why.',min_sec:30,max_sec:90,intensity:1,active:true},{id:'emo_02',category_id:'emo',prompt:'Maintain eye contact and breathe together. Match inhales and exhales.',min_sec:60,max_sec:180,intensity:1,active:true},{id:'emo_03',category_id:'emo',prompt:'Whisper three compliments—one playful, one sincere, one surprising.',min_sec:45,max_sec:120,intensity:1,active:true},{id:'sens_01',category_id:'sens',prompt:'Slow hand massage: fingertips only, deliberate and light.',min_sec:60,max_sec:180,intensity:2,active:true},{id:'sens_02',category_id:'sens',prompt:'Trace letters on their skin and let them guess the word.',min_sec:45,max_sec:120,intensity:2,active:true},{id:'sens_03',category_id:'sens',prompt:'Kiss everywhere except the lips; save those for later.',min_sec:60,max_sec:180,intensity:2,active:true},{id:'swap_01',category_id:'swap',prompt:'Control Swap: Decide who leads. Leader guides touch; receiver gives feedback.',min_sec:60,max_sec:180,intensity:3,active:true},{id:'swap_02',category_id:'swap',prompt:'Leader sets a teasing pace; receiver can say “slower” or “pause” only.',min_sec:60,max_sec:180,intensity:3,active:true},{id:'swap_03',category_id:'swap',prompt:'Switch roles and repeat the last tease, 10% slower.',min_sec:45,max_sec:120,intensity:3,active:true},{id:'wild_01',category_id:'wild',prompt:'Roll a die: 1–2 share a secret; 3–4 gentle tease; 5–6 playful dare (PG-13).',min_sec:45,max_sec:90,intensity:2,active:true},{id:'wild_02',category_id:'wild',prompt:'Blindfold improv: one uses voice-only guidance for gentle touch exploration.',min_sec:60,max_sec:180,intensity:3,active:true},{id:'wild_03',category_id:'wild',prompt:'Pick a song; move together without speaking until it ends.',min_sec:90,max_sec:180,intensity:2,active:true},{id:'endg_01',category_id:'endg',prompt:'Edge & breathe: approach, pause, and ground with deep breaths together.',min_sec:60,max_sec:180,intensity:3,active:true},{id:'endg_02',category_id:'endg',prompt:'Mutual back massage and soft words of appreciation.',min_sec:120,max_sec:300,intensity:1,active:true},{id:'endg_03',category_id:'endg',prompt:'Cuddle cooldown: hold each other; slow inhales for four counts, exhales for six.',min_sec:120,max_sec:300,intensity:1,active:true}];
-    const SEED_RNG_ACTIONS=['Kiss','Caress','Massage','Trace letters','Whisper','Compliment','Hold hands','Breathe together'];
-    const SEED_RNG_PARTS=['Neck','Shoulders','Back','Arms','Hands','Waist','Hips','Legs','Ears','Hair'];
-    function initData(){if(!store.get(K.CATS))store.set(K.CATS,SEED_CATS);if(!store.get(K.CARDS))store.set(K.CARDS,SEED_CARDS);if(!store.get(K.ENABLED))store.set(K.ENABLED,SEED_CATS.filter(c=>c.enabled_default).map(c=>c.id));if(store.get(K.MUSIC)===null)store.set(K.MUSIC,'off');if(store.get(K.DAILY)===null)store.set(K.DAILY,'off');if(!store.get(K.SESSION))store.set(K.SESSION,{selected:null,secs:0});if(!store.get(K.RNG_ACTIONS))store.set(K.RNG_ACTIONS,SEED_RNG_ACTIONS);if(!store.get(K.RNG_PARTS))store.set(K.RNG_PARTS,SEED_RNG_PARTS);if(!store.get(K.RNG_MIN))store.set(K.RNG_MIN,30);if(!store.get(K.RNG_MAX))store.set(K.RNG_MAX,120);if(!store.get(K.RNG_SESSION))store.set(K.RNG_SESSION,{action:null,part:null,secs:0});}
-    const state={get cats(){return store.get(K.CATS,[])},set cats(v){store.set(K.CATS,v)},get cards(){return store.get(K.CARDS,[])},set cards(v){store.set(K.CARDS,v)},get enabled(){return store.get(K.ENABLED,[])},set enabled(v){store.set(K.ENABLED,v)},get session(){return store.get(K.SESSION,{selected:null,secs:0})},set session(v){store.set(K.SESSION,v)},get pinHash(){return store.get(K.PINHASH,'')},set pinHash(v){store.set(K.PINHASH,v)},get music(){return store.get(K.MUSIC,'off')},set music(v){store.set(K.MUSIC,v)},get daily(){return store.get(K.DAILY,'off')},set daily(v){store.set(K.DAILY,v)},get timerUrl(){return store.get(K.TIMERURL,'')},set timerUrl(v){store.set(K.TIMERURL,v)},get rngActions(){return store.get(K.RNG_ACTIONS,[])},set rngActions(v){store.set(K.RNG_ACTIONS,v)},get rngParts(){return store.get(K.RNG_PARTS,[])},set rngParts(v){store.set(K.RNG_PARTS,v)},get rngMin(){return store.get(K.RNG_MIN,30)},set rngMin(v){store.set(K.RNG_MIN,v)},get rngMax(){return store.get(K.RNG_MAX,120)},set rngMax(v){store.set(K.RNG_MAX,v)},get rngSession(){return store.get(K.RNG_SESSION,{action:null,part:null,secs:0})},set rngSession(v){store.set(K.RNG_SESSION,v)}};
-    function show(id){for(const el of ['gate','home','playCards','playRng','customize','customizeRng'].map(x=>document.getElementById(x))){if(!el)continue;el.classList.toggle('hidden',el.id!==id);}}
-    async function tryUnlock(){const pin=$('#pin').value.trim();if(!state.pinHash){show('home');return;}const h=await sha256(pin);if(h===state.pinHash){show('home');$('#pin').value='';}else alert('Wrong PIN');}
-    async function setOrChangePin(){const pin=$('#pin').value.trim();if(!pin){alert('Enter a new PIN first');return;}const h=await sha256(pin);state.pinHash=h;$('#pin').value='';alert('PIN set.');show('home');}
-    function bindSettings(){$('#musicToggle').value=state.music;$('#musicToggle').onchange=e=>state.music=e.target.value;$('#dailyToggle').value=state.daily;$('#dailyToggle').onchange=e=>state.daily=e.target.value;$('#timerUrl').value=state.timerUrl;$('#timerUrl').oninput=e=>state.timerUrl=e.target.value.trim();}
-    function renderChips(){const chips=$('#categoryChips');chips.innerHTML='';const enabled=new Set(state.enabled);for(const c of state.cats){const b=document.createElement('button');b.className='chip'+(enabled.has(c.id)?' active':'');b.textContent=c.name;b.onclick=()=>{enabled.has(c.id)?enabled.delete(c.id):enabled.add(c.id);state.enabled=Array.from(enabled);renderChips();};chips.appendChild(b);}}
-    function renderEndgame(){const list=$('#endgameList');list.innerHTML='';const cards=state.cards.filter(x=>x.active&&x.category_id==='endg');for(const c of cards){const li=document.createElement('li');li.textContent=c.prompt;list.appendChild(li);}}
-    function eligibleCards(excludeId=null){const enabled=new Set(state.enabled.length?state.enabled:SEED_CATS.filter(c=>c.enabled_default).map(c=>c.id));return state.cards.filter(c=>c.active&&enabled.has(c.category_id)&&(!excludeId||c.id!==excludeId)&&c.category_id!=='endg');}
-    function randInt(a,b){return Math.floor(a+Math.random()*(b-a+1));}
-    function drawCard(skip=false){const pool=eligibleCards(skip?state.session.selected:null);if(!pool.length){alert('No eligible cards. Enable categories or add cards.');return;}const pick=pool[Math.floor(Math.random()*pool.length)];const secs=randInt(pick.min_sec,pick.max_sec);state.session={selected:pick.id,secs};renderPlayCards();}
-    function renderPlayCards(){const sel=state.cards.find(c=>c.id===state.session.selected);$('#prompt').textContent=sel?sel.prompt:'Draw a challenge';$('#time').textContent=mmss(state.session.secs||0);}
-    let tHandle=null,tLeft=0,running=false,lastTs=0,currentView='cards';
-    function startLocalTimer(secs){tLeft=secs||60;running=true;lastTs=0;const loop=ts=>{if(!running)return;if(!lastTs)lastTs=ts;const d=(ts-lastTs)/1000;lastTs=ts;tLeft-=d;if(tLeft<=0){tLeft=0;running=false;try{new Audio('https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg').play();}catch(e){}}const target=(currentView==='cards')?'#time':'#rngTime';document.querySelector(target).textContent=mmss(tLeft);if(running)tHandle=requestAnimationFrame(loop);};tHandle=requestAnimationFrame(loop);}
-    function renderCustomize(){const host=$('#catEditor');host.innerHTML='';const enabled=new Set(state.enabled);for(const c of state.cats){const chip=document.createElement('button');chip.className='chip'+(enabled.has(c.id)?' active':'');chip.textContent=c.name;chip.onclick=()=>{enabled.has(c.id)?enabled.delete(c.id):enabled.add(c.id);state.enabled=Array.from(enabled);renderCustomize();};host.appendChild(chip);}const sel=$('#fCategory');sel.innerHTML='';for(const c of state.cats){const o=document.createElement('option');o.value=c.id;o.textContent=c.name;sel.appendChild(o);}const list=$('#cardList');list.innerHTML='';for(const c of state.cards){const row=document.createElement('div');row.className='card';row.innerHTML=`<div class="row" style="align-items:flex-start"><div style="flex:1"><div class="muted">${c.category_id.toUpperCase()} • intensity ${c.intensity} • ${c.active?'active':'inactive'}</div><div>${c.prompt}</div><div class="muted">Duration: ${c.min_sec}-${c.max_sec}s</div></div><div class="row"><button data-id="${c.id}" class="edit">Edit</button><button data-id="${c.id}" class="del danger">Delete</button><button data-id="${c.id}" class="toggle">${c.active?'Disable':'Enable'}</button></div></div>`;list.appendChild(row);}list.querySelectorAll('button.edit').forEach(b=>b.onclick=()=>{const c=state.cards.find(x=>x.id===b.dataset.id);$('#fCategory').value=c.category_id;$('#fIntensity').value=c.intensity;$('#fPrompt').value=c.prompt;$('#fMin').value=c.min_sec;$('#fMax').value=c.max_sec;$('#saveCard').dataset.editing=c.id;});list.querySelectorAll('button.del').forEach(b=>b.onclick=()=>{if(!confirm('Delete this card?'))return;state.cards=state.cards.filter(x=>x.id!==b.dataset.id);renderCustomize();});list.querySelectorAll('button.toggle').forEach(b=>b.onclick=()=>{state.cards=state.cards.map(x=>x.id===b.dataset.id?{...x,active:!x.active}:x);renderCustomize();});}
-    $('#saveCard').onclick=()=>{const id=$('#saveCard').dataset.editing||`c_${Date.now()}`;const newCard={id,category_id:$('#fCategory').value,prompt:$('#fPrompt').value.trim(),min_sec:Math.max(10,parseInt($('#fMin').value||'60',10)),max_sec:Math.max(10,parseInt($('#fMax').value||'180',10)),intensity:Math.min(3,Math.max(1,parseInt($('#fIntensity').value||'1',10))),active:true};if(!newCard.prompt){alert('Prompt required');return;}if(newCard.max_sec<newCard.min_sec){alert('Max must be ≥ Min');return;}const editing=$('#saveCard').dataset.editing;if(editing){state.cards=state.cards.map(x=>x.id===editing?newCard:x);$('#saveCard').dataset.editing='';}else{state.cards=[...state.cards,newCard];}$('#fPrompt').value='';$('#fMin').value=60;$('#fMax').value=180;$('#fIntensity').value=1;renderCustomize();};
-    $('#resetCards').onclick=()=>{if(!confirm('Reset to starter deck?'))return;state.cards=SEED_CARDS.slice();renderCustomize();};
-    function renderRngEditors(){const actionsHost=$('#rngActionsList');actionsHost.innerHTML='';state.rngActions.forEach((a,i)=>{const chip=document.createElement('button');chip.className='chip';chip.textContent=a;chip.title='Click to remove';chip.onclick=()=>{const x=[...state.rngActions];x.splice(i,1);state.rngActions=x;renderRngEditors();};actionsHost.appendChild(chip);});const partsHost=$('#rngPartsList');partsHost.innerHTML='';state.rngParts.forEach((p,i)=>{const chip=document.createElement('button');chip.className='chip';chip.textContent=p;chip.title='Click to remove';chip.onclick=()=>{const x=[...state.rngParts];x.splice(i,1);state.rngParts=x;renderRngEditors();};partsHost.appendChild(chip);});$('#rngMin').value=state.rngMin;$('#rngMax').value=state.rngMax;}
-    function rngRoll(){const A=state.rngActions,P=state.rngParts;if(!A.length||!P.length){alert('Add RNG actions and body parts first.');return;}const a=A[Math.floor(Math.random()*A.length)],p=P[Math.floor(Math.random()*P.length)];const secs=randInt(Math.max(10,state.rngMin),Math.max(state.rngMin,state.rngMax));state.rngSession={action:a,part:p,secs};renderRngPlay();}
-    function renderRngPlay(){const s=state.rngSession;$('#rngCombo').textContent=s.action&&s.part?`${s.action} → ${s.part}`:'Action × Body Part';$('#rngTime').textContent=mmss(s.secs||0);}
-    $('#unlock').onclick=tryUnlock; $('#setpin').onclick=setOrChangePin;
-    $('#goPlayCards').onclick=()=>{currentView='cards';show('playCards');renderChips();renderEndgame();renderPlayCards();};
-    $('#goPlayRng').onclick=()=>{currentView='rng';show('playRng');renderRngPlay();};
-    $('#goCustomize').onclick=()=>{show('customize');renderCustomize();};
-    $('#goCustomizeRng').onclick=()=>{show('customizeRng');renderRngEditors();};
-    $$('.backHome').forEach(b=>b.onclick=()=>show('home'));
-    $('#draw').onclick=()=>drawCard(false); $('#skip').onclick=()=>drawCard(true);
-    $('#startTimer').onclick=()=>{const url=state.timerUrl?.trim();const secs=Math.max(1,Math.floor(state.session.secs||60));if(url){window.open(`${url}?sec=${secs}&label=${encodeURIComponent('Slow Burn')}`,'_blank');}else{startLocalTimer(secs);}};
-    $('#rngDraw').onclick=()=>rngRoll(); $('#rngAgain').onclick=()=>rngRoll();
-    $('#rngTimer').onclick=()=>{const url=state.timerUrl?.trim();const secs=Math.max(1,Math.floor(state.rngSession.secs||60));if(url){window.open(`${url}?sec=${secs}&label=${encodeURIComponent('Slow Burn')}`,'_blank');}else{startLocalTimer(secs);}};
-    $('#rngActionAdd').onclick=()=>{const v=$('#rngActionInput').value.trim();if(!v)return;state.rngActions=[...state.rngActions,v];$('#rngActionInput').value='';renderRngEditors();};
-    $('#rngPartAdd').onclick=()=>{const v=$('#rngPartInput').value.trim();if(!v)return;state.rngParts=[...state.rngParts,v];$('#rngPartInput').value='';renderRngEditors();};
-    $('#rngSaveRange').onclick=()=>{const a=Math.max(10,parseInt($('#rngMin').value||'30',10));const b=Math.max(10,parseInt($('#rngMax').value||'120',10));if(b<a){alert('Max must be ≥ Min');return;}state.rngMin=a;state.rngMax=b;alert('Saved.');};
-    $('#rngReset').onclick=()=>{if(!confirm('Reset RNG lists to defaults?'))return;state.rngActions=SEED_RNG_ACTIONS.slice();state.rngParts=SEED_RNG_PARTS.slice();renderRngEditors();};
-    initData(); bindSettings();
+  <!-- Home -->
+  <div id="home" class="hidden">
+    <div class="card">
+      <div class="row">
+        <button id="playCards" class="btn-accent big" style="flex:1">Play: Challenge Cards</button>
+        <button id="playRng" class="big" style="flex:1">Play: RNG Roulette</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3>Settings</h3>
+      <div class="grid cols-3">
+        <div>
+          <label>Ambient sounds</label>
+          <select id="music"><option value="off">Off</option><option value="on">On</option></select>
+        </div>
+        <div>
+          <label>Timer URL (optional)</label>
+          <input id="timerUrl" placeholder="(leave blank to use built-in timer)"/>
+        </div>
+        <div>
+          <label>Content (Import/Export)</label>
+          <div class="row">
+            <button id="exportJson">Export</button>
+            <label class="kbd">
+              Import<input id="importJson" type="file" accept="application/json" style="display:none">
+            </label>
+          </div>
+        </div>
+      </div>
+      <p class="muted">Everything is stored locally. Export a backup, edit <code>data.json</code>, or re-import updates.</p>
+    </div>
+
+    <div class="card">
+      <div class="row">
+        <button id="goCustomize" style="flex:1">Customize Cards</button>
+        <button id="goCustomizeRng" style="flex:1">Customize RNG</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Play: Cards -->
+  <div id="cards" class="hidden">
+    <div class="card">
+      <div class="chips" id="categoryChips"></div>
+      <hr/>
+      <div id="cardPrompt" class="big">Draw a challenge</div>
+      <div id="cardTime" class="timer">00:00</div>
+      <div class="row">
+        <button id="drawCard" class="btn-accent" style="flex:1">Draw</button>
+        <button id="skipCard" style="flex:1">Re-draw</button>
+        <button id="timerCard" class="btn-ghost" style="flex:1">Start Timer</button>
+      </div>
+    </div>
+    <div class="card">
+      <h3>Endgame Options</h3>
+      <ul id="endgameList" class="muted" style="margin:0;padding-left:18px"></ul>
+    </div>
+    <div class="card"><button class="backHome">← Back Home</button></div>
+  </div>
+
+  <!-- Play: RNG -->
+  <div id="rng" class="hidden">
+    <div class="card">
+      <div class="title">RNG Roulette</div>
+      <div class="grid cols-2">
+        <div><label>Action</label><div id="rngAction" class="combo">—</div></div>
+        <div class="row"><button id="rollAction" style="flex:1">Roll Action</button></div>
+
+        <div><label>Body A</label><div id="rngBodyA" class="combo">—</div></div>
+        <div class="row"><button id="rollBodyA" style="flex:1">Roll Body A</button></div>
+
+        <div><label>Body B (optional)</label><div id="rngBodyB" class="combo">—</div></div>
+        <div class="row"><button id="rollBodyB" style="flex:1">Roll Body B</button></div>
+
+        <div><label>Count/Length</label><div id="rngQuant" class="combo">—</div></div>
+        <div class="row"><button id="rollQuant" style="flex:1">Roll Count/Length</button></div>
+      </div>
+
+      <div class="row" style="margin-top:12px">
+        <button id="rngAll" class="btn-accent" style="flex:1">Randomize All</button>
+        <button id="rngDouble" style="flex:1">Double Dare</button>
+      </div>
+
+      <div class="grid" style="margin-top:8px">
+        <div id="rngTimerText" class="timer">00:00</div>
+        <button id="rngTimer" class="btn-ghost">Start Timer</button>
+      </div>
+    </div>
+    <div class="card"><button class="backHome">← Back Home</button></div>
+  </div>
+
+  <!-- Customize: Cards -->
+  <div id="customCards" class="hidden">
+    <div class="card">
+      <h3>Categories</h3>
+      <div id="catEditor" class="chips"></div>
+      <p class="muted">Toggle which categories are in play (endgame stays separate).</p>
+    </div>
+    <div class="card">
+      <h3>Cards</h3>
+      <div id="cardList"></div>
+      <hr/>
+      <h4>Add / Edit</h4>
+      <div class="grid cols-2">
+        <div><label>Category</label><select id="fCategory"></select></div>
+        <div><label>Intensity (1-3)</label><input id="fIntensity" type="number" min="1" max="3" value="1"></div>
+        <div class="grid" style="grid-column:1/-1"><label>Prompt</label><textarea id="fPrompt" rows="3"></textarea></div>
+        <div><label>Min Seconds</label><input id="fMin" type="number" min="10" value="60"></div>
+        <div><label>Max Seconds</label><input id="fMax" type="number" min="10" value="180"></div>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <button id="saveCard" class="btn-accent">Save Card</button>
+        <button id="resetCards" class="danger">Reset Starter Deck</button>
+      </div>
+    </div>
+    <div class="card"><button class="backHome">← Back Home</button></div>
+  </div>
+
+  <!-- Customize: RNG -->
+  <div id="customRng" class="hidden">
+    <div class="card">
+      <h3>RNG: Lists</h3>
+      <div class="grid cols-2">
+        <div>
+          <label>Actions</label>
+          <div id="rngActionsList" class="chips"></div>
+          <div class="row" style="margin-top:8px">
+            <input id="rngActionInput" placeholder="Add action..."><button id="rngActionAdd" class="btn-accent">Add</button>
+          </div>
+        </div>
+        <div>
+          <label>Body Parts</label>
+          <div id="rngPartsList" class="chips"></div>
+          <div class="row" style="margin-top:8px">
+            <input id="rngPartInput" placeholder="Add body part..."><button id="rngPartAdd" class="btn-accent">Add</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card">
+      <h3>RNG: Count/Length</h3>
+      <div class="grid cols-3">
+        <div>
+          <label>Mode</label>
+          <select id="rngMode">
+            <option value="times">Times</option>
+            <option value="seconds">Seconds</option>
+          </select>
+        </div>
+        <div>
+          <label>Min</label>
+          <input id="rngMin" type="number" min="1" value="1">
+        </div>
+        <div>
+          <label>Max</label>
+          <input id="rngMax" type="number" min="1" value="5">
+        </div>
+      </div>
+      <div class="row" style="margin-top:10px">
+        <button id="rngSaveRange" class="btn-accent">Save Range</button>
+        <button id="rngReset" class="danger">Reset RNG Defaults</button>
+      </div>
+    </div>
+    <div class="card"><button class="backHome">← Back Home</button></div>
+  </div>
+</div>
+
+<script>
+  // ---------- util ----------
+  const $ = s => document.querySelector(s), $$ = s => Array.from(document.querySelectorAll(s));
+  const pad2 = n => String(n).padStart(2,'0');
+  const mmss = s => `${pad2(Math.floor(s/60))}:${pad2(Math.max(0,Math.floor(s%60)))}`;
+  const store = { get(k,v){ try{ return JSON.parse(localStorage.getItem(k)) ?? v; }catch{ return v; } }, set(k,v){ localStorage.setItem(k, JSON.stringify(v)); } };
+  async function sha256(text){
+    if (self.crypto?.subtle) {
+      const data = new TextEncoder().encode(text);
+      const hash = await crypto.subtle.digest('SHA-256', data);
+      return Array.from(new Uint8Array(hash)).map(b=>b.toString(16).padStart(2,'0')).join('');
+    }
+    // Fallback (Safari edge): store "plain:<pin>"
+    return 'plain:'+text;
+  }
+
+  // ---------- keys ----------
+  const K = {
+    DATA_VER:'sb_data_ver',
+    CATS:'sb_categories', CARDS:'sb_cards', ENABLED:'sb_enabled',
+    PINHASH:'sb_pin_hash', TIMERURL:'sb_timer_url', MUSIC:'sb_music',
+    SESSION:'sb_session',
+    RNG_ACTIONS:'sb_rng_actions', RNG_PARTS:'sb_rng_parts',
+    RNG_MODE:'sb_rng_mode', RNG_MIN:'sb_rng_min', RNG_MAX:'sb_rng_max',
+    RNG_SESSION:'sb_rng_session'
+  };
+
+  // ---------- seed from data.json ----------
+  async function seedFromDataJson(){
+    try{
+      const res = await fetch('./data.json', {cache:'no-store'});
+      if(!res.ok) return;
+      const cfg = await res.json();
+      const localVer = store.get(K.DATA_VER, 0);
+      if (localVer >= (cfg.version||1)) return; // already seeded newer or equal
+      store.set(K.CATS, cfg.categories);
+      store.set(K.CARDS, cfg.cards);
+      store.set(K.ENABLED, cfg.categories.filter(c=>c.enabled_default).map(c=>c.id));
+      store.set(K.RNG_ACTIONS, cfg.rng.actions);
+      store.set(K.RNG_PARTS, cfg.rng.parts);
+      store.set(K.RNG_MODE, cfg.rng.mode);
+      store.set(K.RNG_MIN, cfg.rng.min);
+      store.set(K.RNG_MAX, cfg.rng.max);
+      store.set(K.DATA_VER, cfg.version||1);
+    }catch(_){ /* offline or file missing – ignore */ }
+  }
+
+  // ---------- state ----------
+  const state = {
+    get cats(){ return store.get(K.CATS, []); }, set cats(v){ store.set(K.CATS, v); },
+    get cards(){ return store.get(K.CARDS, []); }, set cards(v){ store.set(K.CARDS, v); },
+    get enabled(){ return store.get(K.ENABLED, []); }, set enabled(v){ store.set(K.ENABLED, v); },
+    get pinHash(){ return store.get(K.PINHASH, ''); }, set pinHash(v){ store.set(K.PINHASH, v); },
+    get timerUrl(){ return store.get(K.TIMERURL, ''); }, set timerUrl(v){ store.set(K.TIMERURL, v); },
+    get music(){ return store.get(K.MUSIC, 'off'); }, set music(v){ store.set(K.MUSIC, v); },
+    get session(){ return store.get(K.SESSION, {selected:null, secs:0}); }, set session(v){ store.set(K.SESSION, v); },
+    // RNG
+    get rngActions(){ return store.get(K.RNG_ACTIONS, []); }, set rngActions(v){ store.set(K.RNG_ACTIONS, v); },
+    get rngParts(){ return store.get(K.RNG_PARTS, []); }, set rngParts(v){ store.set(K.RNG_PARTS, v); },
+    get rngMode(){ return store.get(K.RNG_MODE, 'times'); }, set rngMode(v){ store.set(K.RNG_MODE, v); },
+    get rngMin(){ return store.get(K.RNG_MIN, 1); }, set rngMin(v){ store.set(K.RNG_MIN, v); },
+    get rngMax(){ return store.get(K.RNG_MAX, 5); }, set rngMax(v){ store.set(K.RNG_MAX, v); },
+    get rngSession(){ return store.get(K.RNG_SESSION, {a:null, b1:null, b2:null, quant:0}); }, set rngSession(v){ store.set(K.RNG_SESSION, v); },
+  };
+
+  // ---------- nav ----------
+  function show(id){
+    for (const el of ['gate','home','cards','rng','customCards','customRng'].map(x=>document.getElementById(x))) {
+      if(!el) continue; el.classList.toggle('hidden', el.id!==id);
+    }
+  }
+
+  // ---------- PIN ----------
+  async function unlock(){
+    const pin = $('#pin').value.trim();
+    if(!state.pinHash){ show('home'); return; }
+    const h = await sha256(pin);
+    if (h === state.pinHash) { $('#pin').value=''; show('home'); }
+    else alert('Wrong PIN');
+  }
+  async function setPin(){
+    const pin = $('#pin').value.trim();
+    if(!pin){ alert('Enter a new PIN first'); return; }
+    state.pinHash = await sha256(pin);
+    $('#pin').value=''; alert('PIN set.'); show('home');
+  }
+
+  // ---------- Settings ----------
+  function bindSettings(){
+    $('#timerUrl').value = state.timerUrl; $('#timerUrl').oninput = e => state.timerUrl = e.target.value.trim();
+    $('#music').value = state.music; $('#music').onchange = e => state.music = e.target.value;
+    // Export
+    $('#exportJson').onclick = ()=>{
+      const blob = new Blob([JSON.stringify({
+        version: (store.get(K.DATA_VER,1)),
+        categories: state.cats,
+        cards: state.cards,
+        rng: { actions: state.rngActions, parts: state.rngParts, mode: state.rngMode, min: state.rngMin, max: state.rngMax }
+      }, null, 2)], {type:'application/json'});
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'slow-burn-data.json'; a.click();
+    };
+    // Import
+    $('#importJson').onchange = async (e)=>{
+      const f = e.target.files?.[0]; if(!f) return;
+      const txt = await f.text(); let cfg;
+      try{ cfg = JSON.parse(txt); }catch{ alert('Invalid JSON'); return; }
+      if(!confirm('Import will replace current content. Continue?')) return;
+      if(cfg.categories) state.cats = cfg.categories;
+      if(cfg.cards) state.cards = cfg.cards;
+      if(cfg.rng){
+        if(cfg.rng.actions) state.rngActions = cfg.rng.actions;
+        if(cfg.rng.parts) state.rngParts = cfg.rng.parts;
+        if(cfg.rng.mode) state.rngMode = cfg.rng.mode;
+        if(Number.isFinite(cfg.rng.min)) state.rngMin = cfg.rng.min;
+        if(Number.isFinite(cfg.rng.max)) state.rngMax = cfg.rng.max;
+      }
+      alert('Imported.');
+    };
+  }
+
+  // ---------- Cards game ----------
+  function renderCatChips(){
+    const chips = $('#categoryChips'); chips.innerHTML='';
+    const enabled = new Set(state.enabled.length ? state.enabled : state.cats.filter(c=>c.enabled_default).map(c=>c.id));
+    for(const c of state.cats){
+      const b = document.createElement('button');
+      b.className = 'chip'+(enabled.has(c.id)?' active':'');
+      b.textContent = c.name;
+      b.onclick = ()=>{ enabled.has(c.id)?enabled.delete(c.id):enabled.add(c.id); state.enabled = Array.from(enabled); renderCatChips(); };
+      chips.appendChild(b);
+    }
+  }
+  function eligibleCards(excludeId=null){
+    const enabled = new Set(state.enabled.length?state.enabled:state.cats.filter(c=>c.enabled_default).map(c=>c.id));
+    return state.cards.filter(c => c.active && enabled.has(c.category_id) && (!excludeId || c.id!==excludeId) && c.category_id!=='endg');
+  }
+  function randInt(a,b){ return Math.floor(a + Math.random()*(b-a+1)); }
+  function drawCard(skip=false){
+    const pool = eligibleCards(skip ? state.session.selected : null);
+    if(!pool.length){ alert('No eligible cards. Enable categories or add cards.'); return; }
+    const pick = pool[Math.floor(Math.random()*pool.length)];
+    const secs = randInt(pick.min_sec, pick.max_sec);
+    state.session = {selected: pick.id, secs};
+    const sel = state.cards.find(x=>x.id===pick.id);
+    $('#cardPrompt').textContent = sel?.prompt || 'Draw a challenge';
+    $('#cardTime').textContent = mmss(secs);
+  }
+  function renderEndgame(){
+    const list = $('#endgameList'); list.innerHTML='';
+    for(const c of state.cards.filter(x=>x.active && x.category_id==='endg')) {
+      const li = document.createElement('li'); li.textContent = c.prompt; list.appendChild(li);
+    }
+  }
+
+  // timer (shared)
+  let tHandle=null, tLeft=0, running=false, lastTs=0, timeTarget='#cardTime';
+  function startLocalTimer(secs){
+    tLeft = secs || 60; running=true; lastTs=0;
+    const loop = ts=>{
+      if(!running) return;
+      if(!lastTs) lastTs=ts;
+      const d=(ts-lastTs)/1000; lastTs=ts; tLeft-=d;
+      if(tLeft<=0){ tLeft=0; running=false; try{ new Audio('https://actions.google.com/sounds/v1/alarms/alarm_clock.ogg').play(); }catch(e){} }
+      document.querySelector(timeTarget).textContent = mmss(tLeft);
+      if(running) tHandle = requestAnimationFrame(loop);
+    };
+    tHandle = requestAnimationFrame(loop);
+  }
+  function openTimer(secs){
+    const url = state.timerUrl?.trim();
+    if(url){ window.open(`${url}?sec=${Math.max(1,Math.floor(secs))}&label=${encodeURIComponent('Slow Burn')}`,'_blank'); }
+    else { startLocalTimer(secs); }
+  }
+
+  // ---------- Customize: Cards ----------
+  function renderCustomizeCards(){
+    // category toggles
+    const host = $('#catEditor'); host.innerHTML='';
+    const enabled = new Set(state.enabled.length?state.enabled:state.cats.filter(c=>c.enabled_default).map(c=>c.id));
+    for(const c of state.cats){
+      const chip = document.createElement('button');
+      chip.className='chip'+(enabled.has(c.id)?' active':''); chip.textContent=c.name;
+      chip.onclick = ()=>{ enabled.has(c.id)?enabled.delete(c.id):enabled.add(c.id); state.enabled=Array.from(enabled); renderCustomizeCards(); };
+      host.appendChild(chip);
+    }
+    // category select
+    const sel = $('#fCategory'); sel.innerHTML='';
+    for(const c of state.cats){ const o=document.createElement('option'); o.value=c.id; o.textContent=c.name; sel.appendChild(o); }
+    // card list
+    const list = $('#cardList'); list.innerHTML='';
+    for(const c of state.cards){
+      const row = document.createElement('div'); row.className='card';
+      row.innerHTML = `<div class="row" style="align-items:flex-start">
+        <div style="flex:1">
+          <div class="muted">${c.category_id.toUpperCase()} • intensity ${c.intensity} • ${c.active?'active':'inactive'}</div>
+          <div>${c.prompt}</div>
+          <div class="muted">Duration: ${c.min_sec}-${c.max_sec}s</div>
+        </div>
+        <div class="row">
+          <button class="edit" data-id="${c.id}">Edit</button>
+          <button class="del danger" data-id="${c.id}">Delete</button>
+          <button class="toggle" data-id="${c.id}">${c.active?'Disable':'Enable'}</button>
+        </div>
+      </div>`;
+      list.appendChild(row);
+    }
+    list.querySelectorAll('button.edit').forEach(b=>b.onclick=()=>{
+      const c = state.cards.find(x=>x.id===b.dataset.id);
+      $('#fCategory').value=c.category_id; $('#fIntensity').value=c.intensity; $('#fPrompt').value=c.prompt; $('#fMin').value=c.min_sec; $('#fMax').value=c.max_sec; $('#saveCard').dataset.editing=c.id;
+    });
+    list.querySelectorAll('button.del').forEach(b=>b.onclick=()=>{
+      if(!confirm('Delete this card?')) return;
+      state.cards = state.cards.filter(x=>x.id!==b.dataset.id);
+      renderCustomizeCards();
+    });
+    list.querySelectorAll('button.toggle').forEach(b=>b.onclick=()=>{
+      state.cards = state.cards.map(x=> x.id===b.dataset.id ? {...x, active:!x.active} : x);
+      renderCustomizeCards();
+    });
+  }
+  $('#saveCard').onclick=()=>{
+    const id = $('#saveCard').dataset.editing || `c_${Date.now()}`;
+    const newCard = {
+      id,
+      category_id: $('#fCategory').value,
+      prompt: $('#fPrompt').value.trim(),
+      min_sec: Math.max(10, parseInt($('#fMin').value||'60',10)),
+      max_sec: Math.max(10, parseInt($('#fMax').value||'180',10)),
+      intensity: Math.min(3, Math.max(1, parseInt($('#fIntensity').value||'1',10))),
+      active: true
+    };
+    if(!newCard.prompt){ alert('Prompt required'); return; }
+    if(newCard.max_sec < newCard.min_sec){ alert('Max must be ≥ Min'); return; }
+    const editing = $('#saveCard').dataset.editing;
+    if(editing){ state.cards = state.cards.map(x=> x.id===editing ? newCard : x); $('#saveCard').dataset.editing=''; }
+    else { state.cards = [...state.cards, newCard]; }
+    $('#fPrompt').value=''; $('#fMin').value=60; $('#fMax').value=180; $('#fIntensity').value=1;
+    renderCustomizeCards();
+  };
+  $('#resetCards').onclick=()=>{ if(!confirm('Reset to starter deck?')) return; fetch('./data.json').then(r=>r.json()).then(cfg=>{ state.cards = cfg.cards; renderCustomizeCards(); }).catch(()=>alert('Offline; try later.')); };
+
+  // ---------- RNG Platform ----------
+  function renderRngEditors(){
+    const aHost = $('#rngActionsList'); aHost.innerHTML='';
+    state.rngActions.forEach((a,i)=>{ const chip=document.createElement('button'); chip.className='chip'; chip.textContent=a; chip.title='Remove'; chip.onclick=()=>{ const x=[...state.rngActions]; x.splice(i,1); state.rngActions=x; renderRngEditors(); }; aHost.appendChild(chip); });
+    const pHost = $('#rngPartsList'); pHost.innerHTML='';
+    state.rngParts.forEach((p,i)=>{ const chip=document.createElement('button'); chip.className='chip'; chip.textContent=p; chip.title='Remove'; chip.onclick=()=>{ const x=[...state.rngParts]; x.splice(i,1); state.rngParts=x; renderRngEditors(); }; pHost.appendChild(chip); });
+    $('#rngMode').value = state.rngMode;
+    $('#rngMin').value = state.rngMin;
+    $('#rngMax').value = state.rngMax;
+  }
+  function rngRollAction(){ const A=state.rngActions; if(!A.length) return alert('Add actions first.'); const a=A[Math.floor(Math.random()*A.length)]; state.rngSession = {...state.rngSession, a}; renderRngCombo(); }
+  function rngRollBodyA(){ const P=state.rngParts; if(!P.length) return alert('Add body parts first.'); const b1=P[Math.floor(Math.random()*P.length)]; state.rngSession = {...state.rngSession, b1}; renderRngCombo(); }
+  function rngRollBodyB(){ const P=state.rngParts; if(!P.length) { state.rngSession={...state.rngSession,b2:null}; renderRngCombo(); return; } const b2 = Math.random()<0.5 ? null : P[Math.floor(Math.random()*P.length)]; state.rngSession = {...state.rngSession, b2}; renderRngCombo(); }
+  function rngRollQuant(){
+    const min = Math.max(1, parseInt(state.rngMin||'1',10));
+    const max = Math.max(min, parseInt(state.rngMax||'5',10));
+    const q = Math.floor(min + Math.random()*(max-min+1));
+    state.rngSession = {...state.rngSession, quant:q};
+    renderRngCombo();
+  }
+  function rngAll(){ rngRollAction(); rngRollBodyA(); rngRollBodyB(); rngRollQuant(); }
+  function rngDoubleDare(){
+    const A=state.rngActions; if(!A.length) return alert('Add actions first.');
+    const action2 = A[Math.floor(Math.random()*A.length)];
+    alert(`Double Dare:\nPartner B also does: ${action2}`);
+  }
+  function renderRngCombo(){
+    const s = state.rngSession;
+    $('#rngAction').textContent = s.a ?? '—';
+    $('#rngBodyA').textContent = s.b1 ?? '—';
+    $('#rngBodyB').textContent = s.b2 ?? '—';
+    const mode = state.rngMode;
+    $('#rngQuant').textContent = s.quant ? (mode==='seconds' ? `${s.quant} sec` : `${s.quant} times`) : '—';
+    const secs = (mode==='seconds' && s.quant) ? s.quant : Math.max(60, s.quant*10||60);
+    $('#rngTimerText').textContent = mmss(secs);
+  }
+
+  // ---------- rng editor buttons ----------
+  $('#rngActionAdd').onclick = ()=>{ const v=$('#rngActionInput').value.trim(); if(!v) return; state.rngActions=[...state.rngActions,v]; $('#rngActionInput').value=''; renderRngEditors(); };
+  $('#rngPartAdd').onclick = ()=>{ const v=$('#rngPartInput').value.trim(); if(!v) return; state.rngParts=[...state.rngParts,v]; $('#rngPartInput').value=''; renderRngEditors(); };
+  $('#rngSaveRange').onclick = ()=>{ const mode=$('#rngMode').value; const mn=parseInt($('#rngMin').value||'1',10); const mx=parseInt($('#rngMax').value||'5',10); if(mx<mn){ alert('Max must be ≥ Min'); return; } state.rngMode=mode; state.rngMin=mn; state.rngMax=mx; alert('Saved.'); };
+  $('#rngReset').onclick = ()=>{ if(!confirm('Reset RNG defaults?')) return; fetch('./data.json').then(r=>r.json()).then(cfg=>{ state.rngActions=cfg.rng.actions; state.rngParts=cfg.rng.parts; state.rngMode=cfg.rng.mode; state.rngMin=cfg.rng.min; state.rngMax=cfg.rng.max; renderRngEditors(); }).catch(()=>alert('Offline; try later.')); };
+
+  // ---------- events ----------
+  $('#unlock').onclick = unlock; $('#setpin').onclick = setPin;
+  $('#playCards').onclick = ()=>{ show('cards'); renderCatChips(); renderEndgame(); };
+  $('#playRng').onclick   = ()=>{ show('rng'); renderRngCombo(); };
+  $$('.backHome').forEach(b=> b.onclick = ()=> show('home'));
+  $('#goCustomize').onclick = ()=>{ show('customCards'); renderCustomizeCards(); };
+  $('#goCustomizeRng').onclick = ()=>{ show('customRng'); renderRngEditors(); };
+
+  // cards buttons
+  $('#drawCard').onclick = ()=> drawCard(false);
+  $('#skipCard').onclick = ()=> drawCard(true);
+  $('#timerCard').onclick = ()=>{ timeTarget = '#cardTime'; openTimer(state.session.secs||60); };
+
+  // rng buttons
+  $('#rollAction').onclick = rngRollAction;
+  $('#rollBodyA').onclick = rngRollBodyA;
+  $('#rollBodyB').onclick = rngRollBodyB;
+  $('#rollQuant').onclick = rngRollQuant;
+  $('#rngAll').onclick = rngAll;
+  $('#rngDouble').onclick = rngDoubleDare;
+  $('#rngTimer').onclick = ()=>{ const mode=state.rngMode; const q=state.rngSession.quant||60; const secs = (mode==='seconds')? q : Math.max(60, q*10); timeTarget='#rngTimerText'; openTimer(secs); };
+
+  // ---------- boot ----------
+  (async function(){
+    await seedFromDataJson();
+    bindSettings();
     if('serviceWorker' in navigator){ navigator.serviceWorker.register('./sw.js').catch(()=>{}); }
     show('gate');
-  </script>
+  })();
+</script>
 </body>
 </html>
