@@ -1,5 +1,5 @@
-// sw.js — bump cache to force update
-const CACHE = 'slow-burn-v4';
+// sw.js — bump cache for the new UI
+const CACHE = 'slow-burn-v5';
 const ASSETS = ['./','./index.html','./manifest.json','./data.json'];
 
 self.addEventListener('install', e=>{
